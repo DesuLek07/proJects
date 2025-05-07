@@ -6,7 +6,35 @@ from dashboard_usuario import ventana_dashboard
 from dashboard_admin import ventana_dashboard_admin
 
 class ventana_sesion(ventana_principal):
+
+    """
+    Ventana de inicio de sesión para la aplicación SRPP.
+
+    Esta clase maneja la interfaz de inicio de sesión, permitiendo a los usuarios 
+    ingresar su nombre de usuario y contraseña, verificando su autenticidad y 
+    redirigiéndolos a la pantalla correspondiente dependiendo de su rol (administrador o usuario).
+
+    Args:
+        menu_ref: Referencia a la ventana principal del menú.
+        imagen_fondo_ctk: Imagen de fondo de la interfaz.
+
+    Methods:
+        volver_ventana_principal: Vuelve a la ventana principal.
+        construir_interfaz: Construye y organiza los widgets de la interfaz gráfica.
+        login: Realiza la verificación del usuario y contraseña, y redirige según el rol.
+        lanzar: Inicia la ventana de inicio de sesión.
+    """
+
     def __init__(self, menu_ref, imagen_fondo_ctk):
+
+        """
+        Inicializa la ventana de inicio de sesión.
+
+        Args:
+            menu_ref: Referencia a la ventana principal del menú.
+            imagen_fondo_ctk: Imagen de fondo de la interfaz.
+        """
+
         self.menu_ref = menu_ref
         self.imagen_fondo_ctk = imagen_fondo_ctk
         super().__init__(
@@ -18,10 +46,23 @@ class ventana_sesion(ventana_principal):
         self.construir_interfaz()
 
     def volver_ventana_principal(self):
+
+        """
+        Oculta la ventana de inicio de sesión y vuelve a mostrar la ventana principal.
+        """
+
         self.root.withdraw()
         self.menu_ref.mostrar_ventana()
 
     def construir_interfaz(self):
+
+        """
+        Construye la interfaz gráfica de la ventana de inicio de sesión.
+
+        Aquí se organizan los componentes como los campos de texto para el usuario y la contraseña,
+        los botones y las etiquetas.
+        """
+
         # Contenedor
         frame1 = ctk.CTkFrame(self.root, 
                               width=360, 
@@ -48,6 +89,14 @@ class ventana_sesion(ventana_principal):
 
         # Comprobacion login
         def login():
+
+            """
+            Verifica el nombre de usuario y la contraseña ingresada.
+
+            Si los campos están vacíos, muestra un error. Si la verificación es exitosa, 
+            redirige a la ventana correspondiente según el rol del usuario.
+            """
+
             campos = [entrada_usuario.get(), entrada_contraseña.get()]
     
             if any(campo.strip() == '' for campo in campos):
@@ -94,4 +143,9 @@ class ventana_sesion(ventana_principal):
         self.root.bind('<Return>', lambda event: login())
 
     def lanzar(self):
+
+        """
+        Inicia la ventana de inicio de sesión.
+        """
+
         self.iniciar_ventana()

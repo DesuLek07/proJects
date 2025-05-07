@@ -5,7 +5,24 @@ from backend.querys_conexion import registrar
 from ventana_base import ventana_principal
 
 class ventana_registro(ventana_principal):
+
+    """
+    Ventana de registro de usuario para el sistema SRPP.
+
+    Hereda de `ventana_principal` y permite el ingreso de datos personales y credenciales 
+    para registrar un nuevo usuario en el sistema. Contiene validaciones básicas y envía 
+    los datos a la base de datos.
+    """
+
     def __init__(self, menu_ref):
+            
+            """
+            Inicializa la ventana de registro.
+
+            Args:
+                menu_ref (ventana_principal): Referencia a la ventana principal (menú) para volver a ella.
+            """
+
             self.menu_ref = menu_ref
             super().__init__(
             titulo='SRPP REGISTRO', 
@@ -17,10 +34,16 @@ class ventana_registro(ventana_principal):
             self.construir_interfaz()
 
     def volver_ventana_principal(self):
+
+        """Oculta la ventana actual y muestra nuevamente el menú principal."""
+
         self.root.withdraw() 
         self.menu_ref.mostrar_ventana()
 
     def construir_interfaz(self):
+
+        """Construye la interfaz gráfica de la ventana de registro."""
+
         # Contenedor
         frame1 = ctk.CTkFrame(self.root, 
                             width=360, 
@@ -105,11 +128,26 @@ class ventana_registro(ventana_principal):
         entrada_contraseña.place(relx=0.5, rely=0.65, anchor='center')
 
         def registrar_tiempo():
+
+            """
+            Obtiene la fecha y hora actual del sistema.
+
+            Returns:
+                str: Fecha y hora formateada como 'YYYY-MM-DD HH:MM:SS'.
+            """
+
             fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             return fecha_actual
 
         # Comprobacion login
         def register():
+
+            """
+            Valida los campos de entrada y registra un nuevo usuario.
+
+            Si algún campo está vacío o la contraseña es débil, muestra una advertencia.
+            Si todos los datos son válidos, los envía a la función `registrar` del backend.
+            """
 
             campos = [
                 entrada_nombre.get(),
@@ -169,4 +207,7 @@ class ventana_registro(ventana_principal):
         self.root.bind('<Return>', lambda event: register())
 
     def lanzar(self):
+
+        """Lanza la ventana de registro y comienza el bucle principal."""
+
         self.iniciar_ventana()

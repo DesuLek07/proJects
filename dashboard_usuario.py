@@ -5,7 +5,24 @@ from tkinter import messagebox, filedialog
 import os
 
 class ventana_dashboard(ventana_principal):
+
+    """
+    Clase que representa el panel principal para el usuario.
+    Hereda de ventana_principal y carga la interfaz de usuario con sus datos,
+    opciones para enviar PQR, ver historial de tickets y respuestas recibidas.
+    """
+
     def __init__(self, id_usuario, menu_ref, imagen_fondo_ctk=None):
+
+        """
+        Inicializa el dashboard con la información del usuario.
+
+        Args:
+            id_usuario (int): ID del usuario autenticado.
+            menu_ref (obj): Referencia al menú principal para mostrar/ocultar.
+            imagen_fondo_ctk (obj, opcional): Imagen de fondo para el dashboard (no usada aún).
+        """
+
         self.id_usuario = id_usuario
         self.menu_ref = menu_ref  
         self.imagen_fondo_ctk = imagen_fondo_ctk
@@ -21,11 +38,22 @@ class ventana_dashboard(ventana_principal):
         self.construir_interfaz()
 
     def volver_ventana_principal(self):
+
+        """
+        Muestra nuevamente el menú principal desde el dashboard.
+        """
+
         self.root.deiconify()
         if self.menu_ref:
             self.menu_ref.mostrar_ventana()
 
     def construir_interfaz(self):
+        
+        """
+        Construye la interfaz gráfica del dashboard con los datos del usuario,
+        botones de navegación y contenedores visuales.
+        """
+
         # Fondo de la interfaz
         self.fondo = ctk.CTkFrame(self.root, width=1000, height=550, fg_color='#1e1e2f')
         self.fondo.pack()
@@ -100,6 +128,12 @@ class ventana_dashboard(ventana_principal):
         self.boton_ver_respuestas.place(relx=0.5, rely=0.35, anchor='center')
 
     def abrir_pqr(self):
+
+        """
+        Abre una nueva ventana para que el usuario envíe una PQR (Petición, Queja o Reclamo).
+        Permite adjuntar un archivo opcional (hasta 2MB).
+        """
+
         ventana_pqr = ctk.CTkToplevel(self.root)
         ventana_pqr.title("Enviar PQR")
         ventana_pqr.geometry("420x550")
@@ -163,6 +197,12 @@ class ventana_dashboard(ventana_principal):
         ctk.CTkButton(ventana_pqr, text="Enviar PQR", command=enviar_pqr).pack(pady=20)
 
     def abrir_historial(self):
+
+        """
+        Muestra una ventana con el historial de tickets enviados por el usuario.
+        Incluye opción para descargar archivos adjuntos si existen.
+        """
+
         ventana_historial = ctk.CTkToplevel(self.root)
         ventana_historial.title("Historial de Tickets")
         ventana_historial.geometry("600x500")
@@ -204,6 +244,11 @@ class ventana_dashboard(ventana_principal):
                 boton_descargar.pack(anchor="e", padx=10, pady=5)
 
     def ver_respuestas(self):
+
+        """
+        Abre una ventana con las respuestas asociadas a los tickets enviados por el usuario.
+        """
+
         respuestas = obtener_respuestas_usuario(self.id_usuario)
 
         ventana_respuestas = ctk.CTkToplevel(self.root)
@@ -223,7 +268,17 @@ class ventana_dashboard(ventana_principal):
 
 
     def mostrar_info_usuario(self):
+
+        """
+        Muestra una ventana emergente con el ID del usuario actual.
+        """
+
         messagebox.showinfo("Información del usuario", f"ID de usuario: {self.id_usuario}")
 
     def lanzar(self):
+
+        """
+        Inicia la ventana de dashboard y entra en el bucle principal.
+        """
+
         self.iniciar_ventana()

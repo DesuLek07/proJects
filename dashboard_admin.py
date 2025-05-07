@@ -4,7 +4,23 @@ from backend.querys_conexion import obtener_datos_usuario, obtener_tickets_pendi
 from tkinter import messagebox
 
 class ventana_dashboard_admin(ventana_principal):
+
+    """
+    Panel administrativo para gestionar tickets y usuarios.
+    Hereda de ventana_principal y ofrece funcionalidades específicas para administradores.
+    """
+
     def __init__(self, id_usuario, menu_ref, imagen_fondo_ctk):
+
+        """
+        Inicializa el panel del administrador con la interfaz y funcionalidades.
+
+        Args:
+            id_usuario (int): ID del usuario administrador.
+            menu_ref (obj): Referencia al menú principal para mostrar/ocultar.
+            imagen_fondo_ctk (obj): Imagen de fondo (opcional, aún no usada).
+        """
+
         self.id_usuario = id_usuario
         self.menu_ref = menu_ref
         self.imagen_fondo_ctk = imagen_fondo_ctk
@@ -20,6 +36,12 @@ class ventana_dashboard_admin(ventana_principal):
         self.construir_interfaz()
 
     def construir_interfaz(self):
+
+        """
+        Construye la interfaz gráfica del panel del administrador.
+        Incluye datos del usuario, barra lateral de navegación y panel de bienvenida.
+        """
+
         # Fondo general
         self.fondo = ctk.CTkFrame(self.root, width=1000, height=550, fg_color='#1e1e2f')
         self.fondo.pack()
@@ -86,6 +108,12 @@ class ventana_dashboard_admin(ventana_principal):
         self.boton_estadisticas.place(relx=0.5, rely=0.25, anchor='center')
 
     def abrir_tickets_pendientes(self):
+
+        """
+        Abre una ventana emergente que muestra todos los tickets pendientes.
+        Permite al administrador ver detalles y actualizar estado/prioridad/mensaje del ticket.
+        """
+
         tickets = obtener_tickets_pendientes()
 
         ventana_tickets = ctk.CTkToplevel(self.root)
@@ -155,10 +183,27 @@ class ventana_dashboard_admin(ventana_principal):
             ctk.CTkButton(frame, text="Ver detalles", command=expandir_ticket).pack(pady=5)
 
     def gestionar_usuarios(self):
+
+        """
+        Muestra un mensaje informando que la funcionalidad de gestión de usuarios
+        está en desarrollo.
+        """
+
         messagebox.showinfo("Gestión de usuarios", "Aquí se mostrará la gestión de usuarios (en desarrollo).")
 
     def mostrar_estadisticas(self):
+
+        """
+        Muestra un mensaje informando que la funcionalidad de estadísticas
+        está en desarrollo.
+        """
+
         messagebox.showinfo("Estadísticas", "Aquí se mostrarán estadísticas del sistema (en desarrollo).")
 
     def lanzar(self):
+
+        """
+        Inicia el bucle principal de la ventana del panel administrador.
+        """
+
         self.iniciar_ventana()

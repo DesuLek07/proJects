@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dashboard_admin &#8212; documentación de SRRPM HelpDesk - 1.5</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=113f3153"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/translations.js?v=f85f4cfb"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Código fuente para dashboard_admin</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">customtkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ctk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ventana_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ventana_principal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">backend.querys_conexion</span><span class="w"> </span><span class="kn">import</span> <span class="n">obtener_datos_usuario</span><span class="p">,</span> <span class="n">obtener_tickets_pendientes</span><span class="p">,</span> <span class="n">actualizar_estado_ticket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="kn">import</span> <span class="n">messagebox</span>
+
+<div class="viewcode-block" id="ventana_dashboard_admin">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ventana_dashboard_admin</span><span class="p">(</span><span class="n">ventana_principal</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Panel administrativo para gestionar tickets y usuarios.</span>
+<span class="sd">    Hereda de ventana_principal y ofrece funcionalidades específicas para administradores.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_usuario</span><span class="p">,</span> <span class="n">menu_ref</span><span class="p">,</span> <span class="n">imagen_fondo_ctk</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa el panel del administrador con la interfaz y funcionalidades.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id_usuario (int): ID del usuario administrador.</span>
+<span class="sd">            menu_ref (obj): Referencia al menú principal para mostrar/ocultar.</span>
+<span class="sd">            imagen_fondo_ctk (obj): Imagen de fondo (opcional, aún no usada).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_usuario</span> <span class="o">=</span> <span class="n">id_usuario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_ref</span> <span class="o">=</span> <span class="n">menu_ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imagen_fondo_ctk</span> <span class="o">=</span> <span class="n">imagen_fondo_ctk</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">titulo</span><span class="o">=</span><span class="s1">&#39;Panel Administrador&#39;</span><span class="p">,</span>
+            <span class="n">tamaño</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">550</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+            <span class="n">tema</span><span class="o">=</span><span class="s1">&#39;dark&#39;</span><span class="p">,</span>
+            <span class="n">minimo</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">550</span><span class="p">),</span>
+            <span class="n">maximo</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">550</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">construir_interfaz</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ventana_dashboard_admin.construir_interfaz">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin.construir_interfaz">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construir_interfaz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construye la interfaz gráfica del panel del administrador.</span>
+<span class="sd">        Incluye datos del usuario, barra lateral de navegación y panel de bienvenida.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Fondo general</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fondo</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">550</span><span class="p">,</span> <span class="n">fg_color</span><span class="o">=</span><span class="s1">&#39;#1e1e2f&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fondo</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+
+        <span class="c1"># Panel de bienvenida</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_inicio</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">560</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+                                          <span class="n">fg_color</span><span class="o">=</span><span class="s1">&#39;#252540&#39;</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="s1">&#39;#1e1e2f&#39;</span><span class="p">,</span>
+                                          <span class="n">border_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">border_color</span><span class="o">=</span><span class="s1">&#39;#3a3a5f&#39;</span><span class="p">,</span>
+                                          <span class="n">corner_radius</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_inicio</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">titulo</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Panel del Administrador&#39;</span><span class="p">,</span>
+                                   <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">),</span>
+                                   <span class="n">fg_color</span><span class="o">=</span><span class="s1">&#39;#1e1e2f&#39;</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="s1">&#39;#1e1e2f&#39;</span><span class="p">,</span>
+                                   <span class="n">text_color</span><span class="o">=</span><span class="s1">&#39;light cyan&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titulo</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Datos del usuario</span>
+        <span class="n">datos</span> <span class="o">=</span> <span class="n">obtener_datos_usuario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_usuario</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datos</span><span class="p">:</span>
+            <span class="n">etiquetas</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;Nombre&quot;</span><span class="p">,</span> <span class="s2">&quot;Segundo Nombre&quot;</span><span class="p">,</span> <span class="s2">&quot;Apellido&quot;</span><span class="p">,</span> <span class="s2">&quot;Segundo Apellido&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Tipo ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Número ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Correo&quot;</span><span class="p">,</span> <span class="s2">&quot;Teléfono 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Teléfono 2&quot;</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">campo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">etiquetas</span><span class="p">):</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_inicio</span><span class="p">,</span>
+                             <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">datos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">datos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span>
+                             <span class="n">text_color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_inicio</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;No se encontraron datos.&quot;</span><span class="p">,</span>
+                         <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span>
+                         <span class="n">text_color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Barra lateral</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_barra_lateral</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">550</span><span class="p">,</span>
+                                                <span class="n">fg_color</span><span class="o">=</span><span class="s1">&#39;#12121f&#39;</span><span class="p">,</span> <span class="n">corner_radius</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_barra_lateral</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;nw&#39;</span><span class="p">)</span>
+
+        <span class="n">estilo_boton</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+            <span class="s2">&quot;fg_color&quot;</span><span class="p">:</span> <span class="s2">&quot;#3e4a89&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hover_color&quot;</span><span class="p">:</span> <span class="s2">&quot;#5065b1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;corner_radius&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+            <span class="s2">&quot;text_color&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;font&quot;</span><span class="p">:</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Botones barra lateral</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_ver_tickets</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_barra_lateral</span><span class="p">,</span>
+                                               <span class="n">text</span><span class="o">=</span><span class="s1">&#39;📂&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">abrir_tickets_pendientes</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">estilo_boton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_ver_tickets</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_gestionar_usuarios</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_barra_lateral</span><span class="p">,</span>
+                                                      <span class="n">text</span><span class="o">=</span><span class="s1">&#39;👥&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gestionar_usuarios</span><span class="p">,</span>
+                                                      <span class="o">**</span><span class="n">estilo_boton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_gestionar_usuarios</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_estadisticas</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_barra_lateral</span><span class="p">,</span>
+                                                <span class="n">text</span><span class="o">=</span><span class="s1">&#39;📊&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mostrar_estadisticas</span><span class="p">,</span>
+                                                <span class="o">**</span><span class="n">estilo_boton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_estadisticas</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ventana_dashboard_admin.abrir_tickets_pendientes">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin.abrir_tickets_pendientes">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abrir_tickets_pendientes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Abre una ventana emergente que muestra todos los tickets pendientes.</span>
+<span class="sd">        Permite al administrador ver detalles y actualizar estado/prioridad/mensaje del ticket.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">tickets</span> <span class="o">=</span> <span class="n">obtener_tickets_pendientes</span><span class="p">()</span>
+
+        <span class="n">ventana_tickets</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkToplevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">ventana_tickets</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Tickets Pendientes&quot;</span><span class="p">)</span>
+        <span class="n">ventana_tickets</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;650x500&quot;</span><span class="p">)</span>
+        <span class="n">ventana_tickets</span><span class="o">.</span><span class="n">resizable</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tickets</span><span class="p">:</span>
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_tickets</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;No hay tickets pendientes.&quot;</span><span class="p">,</span>
+                     <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">ticket</span> <span class="ow">in</span> <span class="n">tickets</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkFrame</span><span class="p">(</span><span class="n">ventana_tickets</span><span class="p">,</span> <span class="n">fg_color</span><span class="o">=</span><span class="s2">&quot;#2c2c2c&quot;</span><span class="p">,</span> <span class="n">corner_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ID: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> | Título: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Usuario: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2"> | Prioridad: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Descripción: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">2</span><span class="p">][:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">,</span>
+                     <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">11</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Botón para expandir</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">expandir_ticket</span><span class="p">(</span><span class="n">ticket</span><span class="o">=</span><span class="n">ticket</span><span class="p">):</span>
+                <span class="n">ventana_expandida</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkToplevel</span><span class="p">(</span><span class="n">ventana_tickets</span><span class="p">)</span>
+                <span class="n">ventana_expandida</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detalles del Ticket </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">ventana_expandida</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;450x500&quot;</span><span class="p">)</span>
+                <span class="n">ventana_expandida</span><span class="o">.</span><span class="n">resizable</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Título: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Descripción: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">),</span> <span class="n">wraplength</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Estado: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prioridad: </span><span class="si">{</span><span class="n">ticket</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkLabel</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Mensaje al usuario:&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">ctk</span><span class="o">.</span><span class="n">CTkFont</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+
+                <span class="n">entrada_respuesta</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkTextbox</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+                <span class="n">entrada_respuesta</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+                <span class="c1"># Cambiar estado y prioridad</span>
+                <span class="n">estado_var</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">StringVar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">ticket</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">prioridad_var</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">StringVar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">ticket</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+
+                <span class="n">estado_menu</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkOptionMenu</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="n">estado_var</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pendiente&quot;</span><span class="p">,</span> <span class="s2">&quot;en proceso&quot;</span><span class="p">,</span> <span class="s2">&quot;resuelto&quot;</span><span class="p">])</span>
+                <span class="n">estado_menu</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+                <span class="n">prioridad_menu</span> <span class="o">=</span> <span class="n">ctk</span><span class="o">.</span><span class="n">CTkOptionMenu</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="n">prioridad_var</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;baja&quot;</span><span class="p">,</span> <span class="s2">&quot;media&quot;</span><span class="p">,</span> <span class="s2">&quot;alta&quot;</span><span class="p">])</span>
+                <span class="n">prioridad_menu</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">actualizar_ticket</span><span class="p">():</span>
+                    <span class="n">nuevo_estado</span> <span class="o">=</span> <span class="n">estado_var</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="n">nueva_prioridad</span> <span class="o">=</span> <span class="n">prioridad_var</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="n">mensaje</span> <span class="o">=</span> <span class="n">entrada_respuesta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">resultado</span> <span class="o">=</span> <span class="n">actualizar_estado_ticket</span><span class="p">(</span><span class="n">ticket</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nuevo_estado</span><span class="p">,</span> <span class="n">nueva_prioridad</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">resultado</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">mensaje</span><span class="p">:</span>
+                            <span class="kn">from</span><span class="w"> </span><span class="nn">backend.querys_conexion</span><span class="w"> </span><span class="kn">import</span> <span class="n">guardar_respuesta_ticket</span>
+                            <span class="n">guardar_respuesta_ticket</span><span class="p">(</span><span class="n">ticket</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_usuario</span><span class="p">,</span> <span class="n">mensaje</span><span class="p">)</span>
+                        <span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Actualización exitosa&quot;</span><span class="p">,</span> <span class="s2">&quot;Ticket actualizado y mensaje enviado.&quot;</span><span class="p">)</span>
+                        <span class="n">ventana_expandida</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="s2">&quot;Hubo un problema al actualizar el ticket.&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Botón para guardar cambios</span>
+                <span class="n">ctk</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">ventana_expandida</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Actualizar&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">actualizar_ticket</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+            <span class="n">ctk</span><span class="o">.</span><span class="n">CTkButton</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Ver detalles&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">expandir_ticket</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ventana_dashboard_admin.gestionar_usuarios">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin.gestionar_usuarios">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gestionar_usuarios</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Muestra un mensaje informando que la funcionalidad de gestión de usuarios</span>
+<span class="sd">        está en desarrollo.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Gestión de usuarios&quot;</span><span class="p">,</span> <span class="s2">&quot;Aquí se mostrará la gestión de usuarios (en desarrollo).&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ventana_dashboard_admin.mostrar_estadisticas">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin.mostrar_estadisticas">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mostrar_estadisticas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Muestra un mensaje informando que la funcionalidad de estadísticas</span>
+<span class="sd">        está en desarrollo.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Estadísticas&quot;</span><span class="p">,</span> <span class="s2">&quot;Aquí se mostrarán estadísticas del sistema (en desarrollo).&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ventana_dashboard_admin.lanzar">
+<a class="viewcode-back" href="../dashboard_admin.html#dashboard_admin.ventana_dashboard_admin.lanzar">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lanzar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicia el bucle principal de la ventana del panel administrador.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">iniciar_ventana</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">SRRPM HelpDesk</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navegación</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ventana_base.html">Ventana Base Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dashboard_admin.html">Dashboard Admin Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dashboard_usuario.html">Dashboard Usuario Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sesion.html">Sesion Usuario Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registro.html">Registro Usuario Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Código de módulo</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, DesuLek07.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
