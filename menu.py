@@ -14,7 +14,7 @@ imagen_fondo_ctk = ctk.CTkImage(light_image=imagen_fondo, dark_image=imagen_fond
 
 # Funciones de botones
 def github():
-    webbrowser.open('https://github.com/DesuLek07/proJects.git')
+    webbrowser.open('https://github.com/DesuLek07/proJects/tree/helpdesk#')
 def patreon():  
     webbrowser.open('https://patreon.com/DesuLek07')
 
