@@ -3,6 +3,7 @@ from tkinter import messagebox
 from backend.querys_conexion import verificar
 from ventana_base import ventana_principal
 from dashboard_usuario import ventana_dashboard 
+from dashboard_admin import ventana_dashboard_admin
 
 class ventana_sesion(ventana_principal):
     def __init__(self, menu_ref, imagen_fondo_ctk):
@@ -55,16 +56,22 @@ class ventana_sesion(ventana_principal):
 
             usuario = entrada_usuario.get()
             contraseña = entrada_contraseña.get()
-    
-            id_usuario = verificar(usuario, contraseña)
-    
+
+            id_usuario, rol = verificar(usuario, contraseña)
+
             if id_usuario:
                 messagebox.showinfo('Login exitoso', 'Bienvenido')
 
                 self.root.withdraw()
-                # Redirige a la ventana de dashboard_usuario, pasando el id_usuario
-                dashboard_usuario = ventana_dashboard(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)  
-                dashboard_usuario.lanzar()
+
+                # Redirigir según el rol
+                if rol == 'administrador':
+                    # Pasar los tres parámetros necesarios
+                    dashboard_administrador = ventana_dashboard_admin(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)
+                    dashboard_administrador.lanzar()
+                else:
+                    dashboard_usuario = ventana_dashboard(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)
+                    dashboard_usuario.lanzar()
 
             else:
                 messagebox.showerror('Error', 'Usuario o contraseña incorrectos')

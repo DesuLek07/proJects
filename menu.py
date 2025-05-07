@@ -32,7 +32,7 @@ class ventana_menu(ventana_principal):
     def enviar_a_sesion(self):
         from sesion import ventana_sesion
         self.root.withdraw()
-        sesion = ventana_sesion(menu_ref=self, imagen_fondo_ctk=imagen_fondo_ctk)  # Pasar la imagen
+        sesion = ventana_sesion(menu_ref=self, imagen_fondo_ctk=imagen_fondo_ctk)
         sesion.lanzar()
 
     def enviar_a_registro(self):   
