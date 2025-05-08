@@ -107,6 +107,14 @@ class ventana_dashboard_admin(ventana_principal):
                                                 **estilo_boton)
         self.boton_estadisticas.place(relx=0.5, rely=0.25, anchor='center')
 
+        # Boton salida segura
+        Boton_salida = ctk.CTkButton(self.root, text='Salida segura', font=ctk.CTkFont(32, weight='bold', size=12),
+                                corner_radius=20,
+                                fg_color='red3',
+                                bg_color='#1e1e2f',
+                                command=exit)
+        Boton_salida.place(relx=0.95, rely=0.95, anchor='e')
+
     def abrir_tickets_pendientes(self):
 
         """
