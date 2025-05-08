@@ -149,3 +149,35 @@ def guardar_respuesta_ticket(id_ticket, id_usuario, mensaje):
     except Exception as e:
         print("Error al guardar la respuesta del ticket:", e)
         return False
+    
+def obtener_historial_tickets_usuario(id_usuario):
+    """
+    Obtiene el historial completo de tickets de un usuario específico.
+
+    Args:
+        id_usuario (int): ID del usuario.
+
+    Returns:
+        list: Lista de tuplas con los datos de los tickets.
+    """
+    with Session(engine) as session:
+        resultados = session.execute(
+            text("CALL sp_historial_tickets_usuario(:id_usuario)"),
+            {"id_usuario": id_usuario}
+        ).fetchall()
+        return resultados
+
+def obtener_usuarios_registrados():
+    """
+    Llama al procedimiento almacenado `sp_obtener_usuarios` y retorna la lista de usuarios.
+
+    Returns:
+        list: Lista de tuplas con los usuarios, o una lista vacía si no hay resultados.
+    """
+    try:
+        with Session(engine) as session:
+            resultados = session.execute(text("CALL sp_obtener_usuarios()")).fetchall()
+            return resultados
+    except Exception as e:
+        print(f"Error al obtener usuarios: {e}")
+        return []

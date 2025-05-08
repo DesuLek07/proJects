@@ -125,12 +125,12 @@ class ventana_menu(ventana_principal):
             Boton4.place(relx=0.95, rely=0.85, anchor='se')
 
             # Boton salida segura
-            Boton5 = ctk.CTkButton(self.root, text='Salida segura', font=ctk.CTkFont(32, weight='bold', size=12),
+            Boton_salida = ctk.CTkButton(self.root, text='Salida segura', font=ctk.CTkFont(32, weight='bold', size=12),
                                    corner_radius=20,
                                    fg_color='red3',
                                    bg_color='black',
                                    command=exit)
-            Boton5.place(relx=0.95, rely=0.95, anchor='e')
+            Boton_salida.place(relx=0.95, rely=0.95, anchor='e')
 
 if __name__ == "__main__":
     menu = ventana_menu()

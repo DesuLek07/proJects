@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from ventana_base import ventana_principal
-from backend.querys_conexion import obtener_datos_usuario, obtener_tickets_pendientes, actualizar_estado_ticket
+from backend.querys_conexion import obtener_datos_usuario, obtener_tickets_pendientes, actualizar_estado_ticket, obtener_historial_tickets_usuario, obtener_usuarios_registrados
 from tkinter import messagebox
 
 class ventana_dashboard_admin(ventana_principal):
@@ -191,13 +191,77 @@ class ventana_dashboard_admin(ventana_principal):
             ctk.CTkButton(frame, text="Ver detalles", command=expandir_ticket).pack(pady=5)
 
     def gestionar_usuarios(self):
-
         """
-        Muestra un mensaje informando que la funcionalidad de gestión de usuarios
-        está en desarrollo.
+        Permite al administrador visualizar todos los usuarios registrados y consultar
+        el historial de tickets de un usuario específico seleccionando su ID.
         """
 
-        messagebox.showinfo("Gestión de usuarios", "Aquí se mostrará la gestión de usuarios (en desarrollo).")
+        # Ventana secundaria
+        ventana = ctk.CTkToplevel()
+        ventana.title("Gestión de Usuarios")
+        ventana.geometry("600x400")
+
+        # Etiqueta de título
+        titulo = ctk.CTkLabel(ventana, text="Usuarios Registrados", font=("Arial", 18, "bold"))
+        titulo.pack(pady=10)
+
+        # Textbox para mostrar usuarios
+        lista_usuarios = ctk.CTkTextbox(ventana, width=500, height=200, wrap="none")
+        lista_usuarios.pack(pady=10)
+
+        # Mostrar usuarios
+        resultados = obtener_usuarios_registrados()
+        if resultados:
+            for usuario in resultados:
+                id_usuario = usuario[0]
+                nombre_usuario = usuario[1]
+                lista_usuarios.insert("end", f"ID: {id_usuario} | Usuario: {nombre_usuario}\n")
+        else:
+            lista_usuarios.insert("end", "No hay usuarios registrados.")
+
+        # Entrada para ingresar ID del usuario
+        entrada_id = ctk.CTkEntry(ventana, placeholder_text="Ingrese ID del usuario")
+        entrada_id.pack(pady=10)
+
+        def mostrar_historial():
+            id_usuario = entrada_id.get()
+            if not id_usuario.isdigit():
+                messagebox.showwarning("ID inválido", "Ingrese un ID numérico válido.")
+                return
+            
+            historial = obtener_historial_tickets_usuario(int(id_usuario))
+            
+            if historial:
+                historial_ventana = ctk.CTkToplevel(ventana)
+                historial_ventana.title(f"Historial de Usuario {id_usuario}")
+                historial_ventana.geometry("600x400")
+                
+                # Frame para contener la lista de tickets
+                frame_tickets = ctk.CTkFrame(historial_ventana)
+                frame_tickets.pack(pady=10, padx=20, fill="both", expand=True)
+
+                for ticket in historial:
+                    frame_ticket = ctk.CTkFrame(frame_tickets, fg_color="#2c2c2c", corner_radius=10)
+                    frame_ticket.pack(pady=10, fill="x")
+
+                    # Muestra los detalles del ticket
+                    ctk.CTkLabel(frame_ticket, text=f"ID: {ticket[0]}", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=10, pady=2)
+                    ctk.CTkLabel(frame_ticket, text=f"Título: {ticket[1]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
+                    ctk.CTkLabel(frame_ticket, text=f"Descripción: {ticket[2]}", font=ctk.CTkFont(size=12), wraplength=550).pack(anchor="w", padx=10, pady=2)
+                    ctk.CTkLabel(frame_ticket, text=f"Fecha: {ticket[3]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
+                    ctk.CTkLabel(frame_ticket, text=f"Estado: {ticket[4]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
+
+                    # Separador entre los tickets
+                    ctk.CTkLabel(frame_ticket, text="------------------------------------------------------", font=ctk.CTkFont(size=10)).pack(pady=5, padx=10)
+
+            else:
+                messagebox.showinfo("Sin resultados", "Este usuario no tiene historial de tickets.")
+            
+        # Botón para consultar historial
+        boton_historial = ctk.CTkButton(ventana, text="Ver historial de tickets", command=mostrar_historial)
+        boton_historial.pack(pady=10)
+
+
 
     def mostrar_estadisticas(self):
 
