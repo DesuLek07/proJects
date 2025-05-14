@@ -4,6 +4,7 @@ from backend.querys_conexion import verificar
 from ventana_base import ventana_principal
 from dashboard_usuario import ventana_dashboard 
 from dashboard_admin import ventana_dashboard_admin
+from dashboard_soporte import ventana_dashboard_soporte
 
 class ventana_sesion(ventana_principal):
 
@@ -118,9 +119,12 @@ class ventana_sesion(ventana_principal):
                     # Pasar los tres parámetros necesarios
                     dashboard_administrador = ventana_dashboard_admin(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)
                     dashboard_administrador.lanzar()
-                else:
+                elif rol == 'usuario':
                     dashboard_usuario = ventana_dashboard(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)
                     dashboard_usuario.lanzar()
+                elif rol == 'soporte':
+                    dashboard_soporte = ventana_dashboard_soporte(id_usuario, menu_ref=self.menu_ref, imagen_fondo_ctk=self.imagen_fondo_ctk)
+                    dashboard_soporte.lanzar()
 
             else:
                 messagebox.showerror('Error', 'Usuario o contraseña incorrectos')

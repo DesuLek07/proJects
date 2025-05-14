@@ -1,6 +1,7 @@
 import customtkinter as ctk
+import tkinter as tk
 from ventana_base import ventana_principal
-from backend.querys_conexion import obtener_datos_usuario, obtener_tickets_pendientes, actualizar_estado_ticket, obtener_historial_tickets_usuario, obtener_usuarios_registrados
+from backend.querys_conexion import obtener_datos_usuario, obtener_tickets_pendientes, actualizar_estado_ticket, obtener_historial_tickets_usuario, obtener_usuarios_registrados, enviar_mensaje_chat, obtener_chat
 from tkinter import messagebox
 
 class ventana_dashboard_admin(ventana_principal):
@@ -115,6 +116,91 @@ class ventana_dashboard_admin(ventana_principal):
                                 command=exit)
         Boton_salida.place(relx=0.95, rely=0.95, anchor='e')
 
+        # Boton chat
+        self.boton_chat = ctk.CTkButton(self.frame_barra_lateral,
+                                text='💬', command=self.abrir_chat_con_soporte,
+                                **estilo_boton)
+        self.boton_chat.place(relx=0.5, rely=0.35, anchor='center')
+
+
+    def abrir_chat_con_soporte(self):
+        """
+        Abre una ventana de chat donde el administrador puede comunicarse con el personal de soporte.
+        """
+
+        ventana_chat = ctk.CTkToplevel(self.root)
+        ventana_chat.title("Chat con Soporte")
+        ventana_chat.geometry("600x600")
+        ventana_chat.resizable(False, False)
+        ventana_chat.configure(fg_color="#202020")  # Fondo oscuro para mejor contraste
+
+        # Título de la ventana
+        ctk.CTkLabel(ventana_chat, text="Chat con Soporte", font=ctk.CTkFont(size=18, weight="bold"), text_color="light cyan").pack(pady=(20, 10))
+
+        # Selector de soporte con descripción
+        ctk.CTkLabel(ventana_chat, text="Escribe el ID del soporte destino para iniciar el chat:", font=ctk.CTkFont(size=12)).pack(pady=10)
+        entrada_destinatario = ctk.CTkEntry(ventana_chat, width=350, height=30)
+        entrada_destinatario.pack(pady=10)
+
+        # Área de mensajes, configurada con una fuente y diseño más legible
+        area_mensajes = ctk.CTkTextbox(ventana_chat, width=460, height=320, font=ctk.CTkFont(size=12), wrap="word")
+        area_mensajes.pack(pady=(10, 15))
+        area_mensajes.configure(state="disabled")  # Deshabilitar la edición directamente para evitar modificaciones no deseadas
+
+        def cargar_chat():
+            area_mensajes.configure(state="normal")
+            area_mensajes.delete("1.0", "end")
+            try:
+                id_destino = int(entrada_destinatario.get())
+                print(f"Obteniendo chat para el ID de soporte: {id_destino}")  # Verifica el ID ingresado
+                mensajes = obtener_chat(self.id_usuario, id_destino)
+                if mensajes:
+                    for msg in mensajes:
+                        emisor = "Tú" if msg[0] == self.id_usuario else "Soporte"
+                        area_mensajes.insert("end", f"{emisor} ({msg[2]}):\n{msg[1]}\n\n")
+                else:
+                    area_mensajes.insert("end", "No se encontraron mensajes previos.\n\n")
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo cargar el chat:\n{e}")
+            area_mensajes.configure(state="disabled")
+
+        def enviar_mensaje():
+            try:
+                id_destino = int(entrada_destinatario.get())
+                texto = entrada_mensaje.get("1.0", "end").strip()
+                if texto:
+                    print(f"Enviando mensaje a soporte ID {id_destino}: {texto}")  # Depuración
+                    enviar_mensaje_chat(self.id_usuario, id_destino, texto)
+                    entrada_mensaje.delete("1.0", "end")
+                    cargar_chat()
+                else:
+                    messagebox.showwarning("Advertencia", "El mensaje no puede estar vacío.")
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo enviar el mensaje:\n{e}")
+
+        # Botón para cargar el chat
+        boton_cargar = ctk.CTkButton(ventana_chat, text="Cargar chat", command=cargar_chat, width=200, height=40)
+        boton_cargar.pack(pady=(5, 15))
+
+        # Etiqueta explicativa para el cuadro de mensaje
+        ctk.CTkLabel(ventana_chat, text="Escribe tu mensaje aquí:", font=ctk.CTkFont(size=12)).pack(pady=5)
+
+        # Entrada para el mensaje a enviar
+        entrada_mensaje = ctk.CTkTextbox(ventana_chat, height=80, font=ctk.CTkFont(size=12), wrap="word")
+        entrada_mensaje.pack(pady=10)
+
+        # Botón para enviar el mensaje
+        boton_enviar = ctk.CTkButton(ventana_chat, text="Enviar mensaje", command=enviar_mensaje, width=200, height=40, fg_color="#4caf50")
+        boton_enviar.pack(pady=(5, 20))
+
+        def actualizar_mensajes_periodicamente():
+            """Función para actualizar el chat cada ciertos segundos."""
+            cargar_chat()  # Llamamos a cargar_chat para actualizar el contenido
+            ventana_chat.after(3000, actualizar_mensajes_periodicamente)  # Actualiza cada 3 segundos (3000 ms)
+
+        # Iniciar el refresco automático de los mensajes
+        actualizar_mensajes_periodicamente()
+
     def abrir_tickets_pendientes(self):
 
         """
@@ -140,8 +226,18 @@ class ventana_dashboard_admin(ventana_principal):
 
             ctk.CTkLabel(frame, text=f"ID: {ticket[0]} | Título: {ticket[1]}",
                      font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", padx=10, pady=2)
-            ctk.CTkLabel(frame, text=f"Usuario: {ticket[5]} {ticket[6]} | Prioridad: {ticket[4]}",
-                     font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
+            
+            # Si el ticket fue reenviado a admin
+            texto_adicional = "⚠️ Reenviado por soporte" if ticket[7] else ""
+            color_texto = "orange" if ticket[7] else "white"
+
+            ctk.CTkLabel(
+                frame,
+                text=f"Usuario: {ticket[5]} {ticket[6]} | Prioridad: {ticket[4]} {texto_adicional}",
+                font=ctk.CTkFont(size=12),
+                text_color=color_texto
+            ).pack(anchor="w", padx=10, pady=2)
+
             ctk.CTkLabel(frame, text=f"Descripción: {ticket[2][:100]}...",
                      font=ctk.CTkFont(size=11)).pack(anchor="w", padx=10, pady=2)
 
@@ -228,34 +324,51 @@ class ventana_dashboard_admin(ventana_principal):
             if not id_usuario.isdigit():
                 messagebox.showwarning("ID inválido", "Ingrese un ID numérico válido.")
                 return
-            
+
             historial = obtener_historial_tickets_usuario(int(id_usuario))
-            
+
             if historial:
                 historial_ventana = ctk.CTkToplevel(ventana)
                 historial_ventana.title(f"Historial de Usuario {id_usuario}")
-                historial_ventana.geometry("600x400")
-                
-                # Frame para contener la lista de tickets
-                frame_tickets = ctk.CTkFrame(historial_ventana)
-                frame_tickets.pack(pady=10, padx=20, fill="both", expand=True)
+                historial_ventana.geometry("620x420")
 
+                # Frame contenedor con scroll
+                contenedor = ctk.CTkFrame(historial_ventana)
+                contenedor.pack(fill="both", expand=True, padx=10, pady=10)
+
+                canvas = tk.Canvas(contenedor, bg="#1a1a1a", highlightthickness=0)
+                scrollbar = ctk.CTkScrollbar(contenedor, orientation="vertical", command=canvas.yview)
+                scroll_frame = ctk.CTkFrame(canvas)
+
+                scroll_frame.bind(
+                    "<Configure>",
+                    lambda e: canvas.configure(
+                        scrollregion=canvas.bbox("all")
+                    )
+                )
+
+                canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+                canvas.configure(yscrollcommand=scrollbar.set)
+
+                canvas.pack(side="left", fill="both", expand=True)
+                scrollbar.pack(side="right", fill="y")
+
+                # Mostrar los tickets
                 for ticket in historial:
-                    frame_ticket = ctk.CTkFrame(frame_tickets, fg_color="#2c2c2c", corner_radius=10)
-                    frame_ticket.pack(pady=10, fill="x")
+                    frame_ticket = ctk.CTkFrame(scroll_frame, fg_color="#2c2c2c", corner_radius=10)
+                    frame_ticket.pack(pady=10, fill="x", padx=10)
 
-                    # Muestra los detalles del ticket
                     ctk.CTkLabel(frame_ticket, text=f"ID: {ticket[0]}", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=10, pady=2)
                     ctk.CTkLabel(frame_ticket, text=f"Título: {ticket[1]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
                     ctk.CTkLabel(frame_ticket, text=f"Descripción: {ticket[2]}", font=ctk.CTkFont(size=12), wraplength=550).pack(anchor="w", padx=10, pady=2)
                     ctk.CTkLabel(frame_ticket, text=f"Fecha: {ticket[3]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
                     ctk.CTkLabel(frame_ticket, text=f"Estado: {ticket[4]}", font=ctk.CTkFont(size=12)).pack(anchor="w", padx=10, pady=2)
 
-                    # Separador entre los tickets
                     ctk.CTkLabel(frame_ticket, text="------------------------------------------------------", font=ctk.CTkFont(size=10)).pack(pady=5, padx=10)
 
             else:
                 messagebox.showinfo("Sin resultados", "Este usuario no tiene historial de tickets.")
+
             
         # Botón para consultar historial
         boton_historial = ctk.CTkButton(ventana, text="Ver historial de tickets", command=mostrar_historial)

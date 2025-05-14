@@ -176,7 +176,7 @@ class ventana_registro(ventana_principal):
             nombre_usuario = entrada_username.get()
             correo = entrada_correo.get()
             telefono_principal = entrada_tel1.get()
-            telefono_secundario = entrada_tel2.get()
+            telefono_secundario = None if entrada_tel2.get() == '' else entrada_tel2.get()
             contraseña_hash = entrada_contraseña.get()
             fecha_actualizacion = registrar_tiempo()
             
