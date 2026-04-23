@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalles del Ticket #{{ ticket.id }}</title>
+  <link rel="stylesheet" href="../static/dashboard.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .ticket-header h2 {
+      margin: 0;
+      color: #2b6cb0;
+    }
+
+    .btn-volver {
+      background-color: #2b6cb0;
+      color: white;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .btn-volver:hover {
+      background-color: #1a4f8c;
+    }
+
+    .info p {
+      margin: 8px 0;
+      font-size: 15px;
+      color: #2d3748;
+    }
+
+    .respuestas {
+      margin-top: 25px;
+    }
+
+    .respuesta {
+      background: #edf2f7;
+      border-left: 4px solid #2b6cb0;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .sin-respuestas {
+      color: #718096;
+      font-style: italic;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ticket-header">
+      <h2>🎫 Ticket #{{ ticket.id }}</h2>
+      <a href="{{ url_for('dashboard') }}" class="btn-volver">⬅ Volver</a>
+    </div>
+
+    <section class="info">
+      <p><strong>Título:</strong> {{ ticket.titulo }}</p>
+      <p><strong>Descripción:</strong> {{ ticket.descripcion }}</p>
+      <p><strong>Categoría:</strong> {{ ticket.categoria }}</p>
+      <p><strong>Prioridad:</strong> {{ ticket.prioridad }}</p>
+      <p><strong>Estado:</strong> {{ ticket.estado }}</p>
+      <p><strong>Fecha de creación:</strong> {{ ticket.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</p>
+    </section>
+
+    <section class="respuestas">
+      <h3>💬 Respuestas del Soporte</h3>
+      {% for r in respuestas %}
+        <div class="respuesta">
+          <p><strong>{{ r.usuario.username }}</strong> — {{ r.fecha_respuesta.strftime('%d/%m/%Y %H:%M') }}</p>
+          <p>{{ r.mensaje }}</p>
+        </div>
+      {% else %}
+        <p class="sin-respuestas">Aún no tienes respuestas del soporte.</p>
+      {% endfor %}
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Dashboard Admin - Mesa de Ayuda') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+    {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>{{ _('Panel de Administración 👑') }}</h1>
+      <input type="text" placeholder="{{ _('Buscar...') }}" class="search-bar">
+    </header>
+
+    <!-- Resumen -->
+    <section class="cards">
+      <div class="card">
+        <h3>{{ _('Total Usuarios') }}</h3>
+        <p>{{ total_usuarios }}</p>
+      </div>
+      <div class="card">
+        <h3>{{ _('Tickets Abiertos') }}</h3>
+        <p>{{ tickets_abiertos }}</p>
+      </div>
+      <div class="card">
+        <h3>{{ _('Tickets en Progreso') }}</h3>
+        <p>{{ tickets_progreso }}</p>
+      </div>
+      <div class="card">
+        <h3>{{ _('Tickets Cerrados') }}</h3>
+        <p>{{ tickets_cerrados }}</p>
+      </div>
+    </section>
+
+    <!-- Usuarios -->
+    <section class="tickets">
+      <h2>{{ _('Usuarios Registrados') }}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ _('ID') }}</th>
+            <th>{{ _('Nombre') }}</th>
+            <th>{{ _('Correo') }}</th>
+            <th>{{ _('Rol') }}</th>
+            <th>{{ _('Acciones') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in usuarios %}
+          <tr>
+            <td>#{{ user.id }}</td>
+            <td>{{ user.primer_nombre }} {{ user.primer_apellido }}</td>
+            <td>{{ user.correo }}</td>
+            <td>{{ user.rol.tipo_rol }}</td>
+            <td>
+              <a href="#" class="btn">{{ _('Editar') }}</a>
+              <a href="#" class="btn btn-danger">{{ _('Eliminar') }}</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center;">{{ _('No hay usuarios registrados') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

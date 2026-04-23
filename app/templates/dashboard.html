@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="stylesheet" href="../static/dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Usuario - Mesa de Ayuda</title>
+</head>
+<body>
+  <!-- Sidebar -->
+    {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="header">
+      <h1>Bienvenido/a, {{ nombre }} 👋</h1>
+      <input type="text" placeholder="Buscar ticket..." class="search-bar">
+      <script src="../static/js/ticket_por_id.js"></script>
+    </header>
+
+    <section class="cards">
+      <div class="card">
+        <h3>Tickets Abiertos</h3>
+        <p>{{ abiertos }}</p>
+      </div>
+      <div class="card">
+        <h3>Tickets en Progreso</h3>
+        <p>{{ progreso }}</p>
+      </div>
+      <div class="card">
+        <h3>Tickets Cerrados</h3>
+        <p>{{ cerrados }}</p>
+      </div>
+    </section>
+
+    <section class="tickets">
+      <h2>Mis Tickets</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Asunto</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+            <tr>
+              <td>#{{ ticket.id }}</td>
+              <td>{{ ticket.titulo }}</td>
+              <td>
+                {% if ticket.estado == "Abierto" %}
+                  <span class="status abierto">{{ ticket.estado }}</span>
+                {% elif ticket.estado == "En progreso" %}
+                  <span class="status progreso">{{ ticket.estado }}</span>
+                {% else %}
+                  <span class="status cerrado">{{ ticket.estado }}</span>
+                {% endif %}
+              </td>
+              <td>{{ ticket.fecha_creacion }}</td>
+              <td>
+                <a href="{{ url_for('ver_ticket_usuario', ticket_id=ticket.id) }}" class="btn-ver">Ver ticket</a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" style="text-align:center;">No hay ningún ticket registrado</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

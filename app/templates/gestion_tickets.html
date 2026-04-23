@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tickets - Mesa de Ayuda</title>
+    <link rel="stylesheet" href="../static/dashboard.css">
+</head>
+<body>  
+
+    <!-- Sidebar -->
+      {% include 'components/sidebar.html' %}
+
+    <!-- Main -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="header">
+            <h1>Gestión de Tickets 🎫</h1>
+            <input type="text" placeholder="Buscar..." class="search-bar" aria-label="Buscar">
+        </header>
+
+        <!-- Estadísticas -->
+        <section class="cards">
+            <div class="card">
+                <h3>Total Usuarios</h3>
+                <p>{{ total_usuarios }}</p>
+            </div>
+            <div class="card">
+                <h3>Abiertos</h3>
+                <p>{{ tickets_abiertos }}</p>
+            </div>
+            <div class="card">
+                <h3>En progreso</h3>
+                <p>{{ tickets_progreso }}</p>
+            </div>
+            <div class="card">
+                <h3>Cerrados</h3>
+                <p>{{ tickets_cerrados }}</p>
+            </div>
+        </section>
+
+        <!-- Filtros -->
+        <form method="get" action="{{ url_for('gestion_tickets') }}" class="filtros">
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" class="form-group select">
+                <option value="">Todos</option>
+                <option value="Abierto" {% if estado == 'Abierto' %}selected{% endif %}>Abierto</option>
+                <option value="En progreso" {% if estado == 'En progreso' %}selected{% endif %}>En progreso</option>
+                <option value="Cerrado" {% if estado == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+            </select>
+
+            <label for="categoria">Categoría:</label>
+            <select id="categoria" name="categoria" class="form-group select">
+                <option value="">Todas</option>
+                <option value="Soporte Técnico" {% if categoria == 'Soporte Técnico' %}selected{% endif %}>Soporte Técnico</option>
+                <option value="Indemnizacion" {% if categoria == 'Indemnizacion' %}selected{% endif %}>Indemnización</option>
+                <option value="Consultas" {% if categoria == 'Consultas' %}selected{% endif %}>Consultas</option>
+                <option value="Solicitud" {% if categoria == 'Solicitud' %}selected{% endif %}>Solicitud</option>
+                <option value="Incidente" {% if categoria == 'Incidente' %}selected{% endif %}>Incidente</option>
+                <option value="Otro" {% if categoria == 'Otro' %}selected{% endif %}>Otro</option>
+            </select>
+
+            <button type="submit" class="btn">Aplicar Filtros</button>
+        </form>
+
+        <!-- Tabla Tickets -->
+        <section class="tickets">
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                        <tr>
+                            <td>#{{ ticket.id }}</td>
+                            <td>{{ ticket.user.username }}</td>
+                            <td>{{ ticket.titulo }}</td>
+                            <td>{{ ticket.categoria }}</td>
+                            <td>
+                                {% if ticket.estado == "Abierto" %}
+                                    <span class="status abierto">{{ ticket.estado }}</span>
+                                {% elif ticket.estado == "En progreso" %}
+                                    <span class="status progreso">{{ ticket.estado }}</span>
+                                {% else %}
+                                    <span class="status cerrado">{{ ticket.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ ticket.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('ver_ticket', ticket_id=ticket.id) }}" class="btn">Ver</a>
+                                <a href="{{ url_for('cerrar_ticket', ticket_id=ticket.id) }}" class="btn btn-danger">Cerrar</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No hay tickets registrados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

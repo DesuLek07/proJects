@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro - Mesa de Ayuda</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- LOGO -->
+  <div class="brand-side">
+    <a href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo">
+    </a>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="form-side">
+    <form class="auth-form" method="POST">
+
+      <h1>Crear Cuenta</h1>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <br>
+          <select name="tipo_de_documento" id="tipo_de_documento" required>
+            <option value="CC">Cédula de ciudadanía</option>
+            <option value="CE">Cédula de extranjería</option>
+            <option value="PTP">Permiso temporal de permanencia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <br>
+          <input type="text" name="numberd" placeholder="Número de documento" required>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="primer_nombre" placeholder="Primer nombre" required>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="segundo_nombre" placeholder="Segundo nombre">
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="primer_apellido" placeholder="Primer apellido" required>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="segundo_apellido" placeholder="Segundo apellido" required>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="username" placeholder="Nombre de usuario" required>
+        </div>
+
+        <div class="form-group">
+          <input type="email" name="correo" placeholder="Correo electrónico" required>
+        </div>
+
+        <div class="form-group full-width">
+          <input type="password" name="password" placeholder="Contraseña" required>
+        </div>
+
+      </div>
+
+
+      <button type="submit" class="btn-submit">Registrar</button>
+
+      <p class="redirect-text">
+        ¿Ya tienes cuenta?
+        <a href="{{ url_for('login') }}">Iniciar sesión</a>
+      </p>
+
+      <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message flash-{{ category }}">
+                {{ message }}
+                <button class="flash-close" onclick="this.parentElement.remove()">✖</button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </form>
+  </div>
+
+</div>
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll(".flash-message").forEach(el => el.remove());
+    }, 5000); // 5 segundos
+  </script>
+</body>
+</html>

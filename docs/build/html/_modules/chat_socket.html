@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chat_socket &mdash; documentación de Dongo - 2.3</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=ecb1fb6c"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Dongo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido / Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chat_socket.html">chat_socket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Dongo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Dongo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">chat_socket</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para chat_socket</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">===========================================</span>
+<span class="sd">Dongo HelpDesk - Módulo de Chat en Tiempo Real</span>
+<span class="sd">===========================================</span>
+
+<span class="sd">Este módulo implementa el chat en tiempo real para el sistema **Dongo HelpDesk**,</span>
+<span class="sd">utilizando Flask y Flask-SocketIO. Permite la comunicación entre usuarios y administradores</span>
+<span class="sd">dentro de salas dinámicas.</span>
+
+<span class="sd">This module implements the real-time chat system for **Dongo HelpDesk**,</span>
+<span class="sd">using Flask and Flask-SocketIO. It enables communication between users and administrators</span>
+<span class="sd">inside dynamic chat rooms.</span>
+
+<span class="sd">Módulo desarrollado por:</span>
+<span class="sd">------------------------</span>
+<span class="sd">- Miguel Ángel León León</span>
+<span class="sd">- Sara Camila Guarín Guerrero</span>
+<span class="sd">- Luis Alejandro Narváez Talavera</span>
+
+<span class="sd">Fecha: Octubre 2025</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask_socketio</span><span class="w"> </span><span class="kn">import</span> <span class="n">SocketIO</span><span class="p">,</span> <span class="n">send</span><span class="p">,</span> <span class="n">emit</span><span class="p">,</span> <span class="n">join_room</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1"># ======================================</span>
+<span class="c1">#  Configuración inicial / Initial setup</span>
+<span class="c1"># ======================================</span>
+
+<span class="c1">#: Instancia principal de la aplicación Flask.</span>
+<span class="c1">#: Main Flask application instance.</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#: Clave secreta para sesiones y seguridad de Flask.</span>
+<span class="c1">#: Secret key for Flask sessions and security.</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;clave_secreta_chat&#39;</span>
+
+<span class="c1">#: Objeto principal de SocketIO que gestiona la comunicación en tiempo real.</span>
+<span class="c1">#: Main SocketIO object that handles real-time communication.</span>
+<span class="n">socketio</span> <span class="o">=</span> <span class="n">SocketIO</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">cors_allowed_origins</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>  <span class="c1"># Permite comunicación en local y red / Allows LAN communication</span>
+
+<span class="c1">#: Diccionario para rastrear usuarios y las salas a las que pertenecen.</span>
+<span class="c1">#: Dictionary to track users and the rooms they belong to.</span>
+<span class="n">rooms</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="c1"># ======================================</span>
+<span class="c1">#  Ruta principal / Main route</span>
+<span class="c1"># ======================================</span>
+
+<div class="viewcode-block" id="index">
+<a class="viewcode-back" href="../chat_socket.html#chat_socket.index">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Página principal del chat.  </span>
+<span class="sd">    Main chat page.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flask.Response</span>
+<span class="sd">        Renderiza la plantilla ``chat.html`` con el nombre de usuario y rol si la sesión está activa.  </span>
+<span class="sd">        Renders the ``chat.html`` template with the username and role if the session is active.</span>
+
+<span class="sd">    Redirects</span>
+<span class="sd">    ---------</span>
+<span class="sd">    Si no hay sesión activa, redirige a la vista de ``login``.  </span>
+<span class="sd">    If no session is active, redirects to the ``login`` view.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;usuario&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+    
+    <span class="n">username</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;usuario&#39;</span><span class="p">)</span>
+    <span class="n">rol</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rol&#39;</span><span class="p">,</span> <span class="s1">&#39;Usuario&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;chat.html&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">rol</span><span class="o">=</span><span class="n">rol</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ======================================</span>
+<span class="c1">#  EVENTOS SOCKET.IO</span>
+<span class="c1"># ======================================</span>
+
+<div class="viewcode-block" id="handle_join">
+<a class="viewcode-back" href="../chat_socket.html#chat_socket.handle_join">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;join&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_join</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maneja el evento cuando un usuario se une a una sala.  </span>
+<span class="sd">    Handles the event when a user joins a chat room.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : dict</span>
+<span class="sd">        Diccionario con las claves ``username`` (nombre de usuario) y ``room`` (sala a la que se une).  </span>
+<span class="sd">        Dictionary with keys ``username`` (user name) and ``room`` (room joined).</span>
+
+<span class="sd">    Emits</span>
+<span class="sd">    -----</span>
+<span class="sd">    message : dict</span>
+<span class="sd">        Envía un mensaje a todos los usuarios en la sala notificando que el usuario se ha unido.  </span>
+<span class="sd">        Sends a message to all users in the room notifying that the user has joined.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;room&#39;</span><span class="p">]</span>
+
+    <span class="n">join_room</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+    <span class="n">rooms</span><span class="p">[</span><span class="n">username</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
+
+    <span class="n">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;🟢 </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> se ha unido al chat.&quot;</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> se unió a la sala </span><span class="si">{</span><span class="n">room</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_message">
+<a class="viewcode-back" href="../chat_socket.html#chat_socket.handle_message">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_message</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maneja el envío de mensajes dentro de una sala.  </span>
+<span class="sd">    Handles message sending inside a chat room.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : dict</span>
+<span class="sd">        Contiene ``username``, ``msg`` y ``room``.  </span>
+<span class="sd">        Contains ``username``, ``msg``, and ``room``.</span>
+
+<span class="sd">    Emits</span>
+<span class="sd">    -----</span>
+<span class="sd">    message : dict</span>
+<span class="sd">        Envía el mensaje formateado con hora y usuario a todos los clientes en la sala.  </span>
+<span class="sd">        Sends the formatted message with time and user to all clients in the room.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;msg&#39;</span><span class="p">]</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;room&#39;</span><span class="p">]</span>
+
+    <span class="n">hora</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">mensaje</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">hora</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">send</span><span class="p">({</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="n">mensaje</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;💬 </span><span class="si">{</span><span class="n">mensaje</span><span class="si">}</span><span class="s2"> (en sala </span><span class="si">{</span><span class="n">room</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_disconnect">
+<a class="viewcode-back" href="../chat_socket.html#chat_socket.handle_disconnect">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;disconnect&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_disconnect</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maneja la desconexión de un usuario.  </span>
+<span class="sd">    Handles user disconnection.</span>
+
+<span class="sd">    Emits</span>
+<span class="sd">    -----</span>
+<span class="sd">    message : dict</span>
+<span class="sd">        Envía un mensaje notificando que el usuario salió del chat.  </span>
+<span class="sd">        Sends a message notifying that the user left the chat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">room</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;🔴 </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> salió del chat.&quot;</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">rooms</span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> se desconectó del chat.&quot;</span><span class="p">)</span>
+        <span class="k">break</span></div>
+
+
+
+<span class="c1"># ======================================</span>
+<span class="c1">#  EJECUCIÓN / APP RUN</span>
+<span class="c1"># ======================================</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;💬 Servidor de chat en tiempo real activo en http://localhost:5861/&quot;</span><span class="p">)</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5861</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Miguel Angel Leon Leon, Sara Camila Guarin Guerrero, Luis Alejandro Narvaez Talavera.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

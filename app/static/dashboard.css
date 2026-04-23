@@ -1,0 +1,343 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+  color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #2c3e50;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.sidebar nav a {
+  display: block;
+  color: #bdc3c7;
+  padding: 12px;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: #34495e;
+  color: #fff;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+}
+
+.search-bar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Tickets Table */
+.tickets h2 {
+  margin-bottom: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+thead {
+  background: #34495e;
+  color: #fff;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.status.abierto {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.status.progreso {
+  background: #f39c12;
+  color: #fff;
+}
+
+.status.cerrado {
+  background: #2ecc71;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  body {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+}
+
+/* Formulario de Tickets */
+.ticket-form {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #34495e;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  resize: none;
+}
+
+.btn-submit {
+  background: #2c3e50;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-submit:hover {
+  background: #34495e;
+}
+
+/* Alertas */
+.alerts {
+  margin-top: 15px;
+}
+
+.alert {
+  background: #63ff8a;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.alert.success {
+  background: #437558;
+}
+
+/* Botones reutilizables */
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #34495e;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #2c3e50;
+}
+
+.btn-danger {
+  background: #e74c3c;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filtros label {
+  font-weight: bold;
+  color: #34495e;
+}
+
+.filtros select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background: #fdfdfd;
+}
+
+.filtros .btn {
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.filtros .btn:hover {
+  background: #34495e;
+}
+
+/* Tabla contenedor */
+.tabla-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn-ver {
+    background-color: #0066ff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.btn-ver:hover {
+    background-color: #004ecc;
+}
+
+/* ================================
+        ANIMACIÓN SUAVE
+================================ */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplicar animación a tarjetas, tabla y formulario */
+.card,
+.ticket-form,
+.filtros,
+.tabla-container,
+.alert {
+  animation: fadeSlide .45s ease forwards;
+}
+
+/* Si quieres que no animen todos al mismo tiempo */
+.card:nth-child(1) { animation-delay: .05s; }
+.card:nth-child(2) { animation-delay: .10s; }
+.card:nth-child(3) { animation-delay: .15s; }
+.card:nth-child(4) { animation-delay: .20s; }
+
+

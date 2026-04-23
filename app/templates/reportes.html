@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Reportes - Mesa de Ayuda') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='reportes.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+  {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>{{ _('Generar Reportes 📊') }}</h1>
+      <input type="text" placeholder="{{ _('Buscar en reportes...') }}" class="search-bar">
+    </header>
+
+    <!-- Filtros -->
+    <section class="filtros-section">
+      <form method="POST" class="filtros-form">
+        <label for="tipo">{{ _('Tipo de reporte:') }}</label>
+        <select name="tipo" id="tipo" required>
+          <option value="">{{ _('Seleccionar...') }}</option>
+          <option value="tickets" {% if filtros.tipo == 'tickets' %}selected{% endif %}>{{ _('Tickets') }}</option>
+          <option value="usuarios" {% if filtros.tipo == 'usuarios' %}selected{% endif %}>{{ _('Usuarios') }}</option>
+        </select>
+
+        <!-- Filtros de Tickets -->
+        <div id="filtros-tickets" class="filtros-opcionales" style="{% if filtros.tipo != 'tickets' %}display:none;{% endif %}">
+          <label>{{ _('Estado:') }}</label>
+          <select name="estado">
+            <option value="">{{ _('Todos') }}</option>
+            <option value="Abierto">Abierto</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Cerrado">Cerrado</option>
+          </select>
+
+          <label>{{ _('Prioridad:') }}</label>
+          <select name="prioridad">
+            <option value="">{{ _('Todas') }}</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+
+        <!-- Filtros de Usuarios -->
+        <div id="filtros-usuarios" class="filtros-opcionales" style="{% if filtros.tipo != 'usuarios' %}display:none;{% endif %}">
+          <label>{{ _('Rol:') }}</label>
+          <select name="rol">
+            <option value="">{{ _('Todos') }}</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Soporte">Soporte</option>
+            <option value="Usuario">Usuario</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-filtrar">{{ _('Filtrar') }}</button>
+      </form>
+    </section>
+
+    <!-- Resultados -->
+    <section class="tabla-section">
+      {% if resultados %}
+      <table class="tabla-reportes">
+        <thead>
+          {% if filtros.tipo == 'tickets' %}
+          <tr>
+            <th>{{ _('ID') }}</th>
+            <th>{{ _('Título') }}</th>
+            <th>{{ _('Estado') }}</th>
+            <th>{{ _('Prioridad') }}</th>
+            <th>{{ _('Categoría') }}</th>
+            <th>{{ _('Usuario') }}</th>
+            <th>{{ _('Fecha de creación') }}</th>
+          </tr>
+          {% else %}
+          <tr>
+            <th>{{ _('ID') }}</th>
+            <th>{{ _('Nombre') }}</th>
+            <th>{{ _('Usuario') }}</th>
+            <th>{{ _('Correo') }}</th>
+            <th>{{ _('Rol') }}</th>
+            <th>{{ _('Fecha de registro') }}</th>
+          </tr>
+          {% endif %}
+        </thead>
+        <tbody>
+          {% for r in resultados %}
+          {% if filtros.tipo == 'tickets' %}
+          <tr>
+            <td>#{{ r.id }}</td>
+            <td>{{ r.titulo }}</td>
+            <td>{{ r.estado }}</td>
+            <td>{{ r.prioridad }}</td>
+            <td>{{ r.categoria }}</td>
+            <td>{{ r.user.username }}</td>
+            <td>{{ r.fecha_creacion.strftime('%Y-%m-%d') }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td>#{{ r.id }}</td>
+            <td>{{ r.primer_nombre }} {{ r.primer_apellido }}</td>
+            <td>{{ r.username }}</td>
+            <td>{{ r.correo }}</td>
+            <td>{{ r.rol.tipo_rol }}</td>
+            <td>{{ r.creado_el.strftime('%Y-%m-%d') }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="exportar">
+        <button onclick="exportarCSV()">{{ _('⬇️ Exportar CSV') }}</button>
+      </div>
+      {% else %}
+      <p style="text-align:center; margin-top:30px;">{{ _('No hay resultados para mostrar.') }}</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+  // Mostrar/Ocultar filtros dinámicamente
+  const tipoSelect = document.getElementById('tipo');
+  tipoSelect.addEventListener('change', () => {
+    const tipo = tipoSelect.value;
+    document.getElementById('filtros-tickets').style.display = tipo === 'tickets' ? 'block' : 'none';
+    document.getElementById('filtros-usuarios').style.display = tipo === 'usuarios' ? 'block' : 'none';
+  });
+
+  // Exportar tabla a CSV
+  function exportarCSV() {
+    let csv = [];
+    const rows = document.querySelectorAll("table tr");
+    for (let row of rows) {
+      const cols = row.querySelectorAll("td, th");
+      const data = Array.from(cols).map(col => `"${col.innerText}"`);
+      csv.push(data.join(","));
+    }
+    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reporte.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  </script>
+</body>
+</html>

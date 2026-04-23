@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tickets - Soporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>  
+
+    <!-- Sidebar -->
+    {% include 'components/sidebar.html' %}
+
+    <!-- Main -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="header">
+            <h1>Gestión de Tickets de Soporte 🧰</h1>
+            <input type="text" placeholder="Buscar ticket..." class="search-bar" aria-label="Buscar ticket">
+        </header>
+
+        <!-- Estadísticas -->
+        <section class="cards">
+            <div class="card">
+                <h3>Abiertos</h3>
+                <p>{{ tickets_abiertos }}</p>
+            </div>
+            <div class="card">
+                <h3>En progreso</h3>
+                <p>{{ tickets_progreso }}</p>
+            </div>
+            <div class="card">
+                <h3>Cerrados</h3>
+                <p>{{ tickets_cerrados }}</p>
+            </div>
+        </section>
+
+        <!-- Filtros -->
+        <form method="get" action="{{ url_for('gestion_tickets_soporte') }}" class="filtros">
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" class="form-group select">
+                <option value="">Todos</option>
+                <option value="Abierto" {% if estado == 'Abierto' %}selected{% endif %}>Abierto</option>
+                <option value="En progreso" {% if estado == 'En progreso' %}selected{% endif %}>En progreso</option>
+                <option value="Cerrado" {% if estado == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+            </select>
+
+            <button type="submit" class="btn">Aplicar Filtros</button>
+        </form>
+
+        <!-- Tabla Tickets -->
+        <section class="tickets">
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Título</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                        <tr>
+                            <td>#{{ ticket.id }}</td>
+                            <td>{{ ticket.user.primer_nombre }} {{ ticket.user.primer_apellido }}</td>
+                            <td>{{ ticket.titulo }}</td>
+                            <td>
+                                {% if ticket.estado == "Abierto" %}
+                                    <span class="status abierto">{{ ticket.estado }}</span>
+                                {% elif ticket.estado == "En progreso" %}
+                                    <span class="status progreso">{{ ticket.estado }}</span>
+                                {% else %}
+                                    <span class="status cerrado">{{ ticket.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ ticket.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <!-- Reutilizamos la vista 'ver_ticket' -->
+                                <a href="{{ url_for('ver_ticket', ticket_id=ticket.id) }}" class="btn">Ver</a>
+                                <a href="{{ url_for('ver_ticket', ticket_id=ticket.id) }}" class="btn btn-success">Responder</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No hay tickets asignados al soporte</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

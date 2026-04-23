@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Historial de Soporte - Mesa de Ayuda') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <!-- Sidebar -->
+  {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <header class="header">
+      <h1>{{ _('Historial de Tickets de Soporte 🧰') }}</h1>
+    </header>
+
+    <!-- Resumen -->
+    <section class="cards">
+      <div class="card">
+        <h3>{{ _('Tickets Abiertos') }}</h3>
+        <p>{{ tickets_abiertos }}</p>
+      </div>
+      <div class="card">
+        <h3>{{ _('En Progreso') }}</h3>
+        <p>{{ tickets_progreso }}</p>
+      </div>
+      <div class="card">
+        <h3>{{ _('Cerrados') }}</h3>
+        <p>{{ tickets_cerrados }}</p>
+      </div>
+      <div class="card total">
+        <h3>{{ _('Total Soporte') }}</h3>
+        <p>{{ tickets|length }}</p>
+      </div>
+    </section>
+
+    <!-- Tabla de Tickets -->
+    <section class="tickets">
+      <h2>{{ _('Historial de Tickets - Categoría Soporte') }}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ _('ID') }}</th>
+            <th>{{ _('Título') }}</th>
+            <th>{{ _('Usuario') }}</th>
+            <th>{{ _('Estado') }}</th>
+            <th>{{ _('Fecha') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td>#{{ ticket.id }}</td>
+            <td>{{ ticket.titulo }}</td>
+            <td>{{ ticket.user.primer_nombre }} {{ ticket.user.primer_apellido }}</td>
+            <td>
+              {% if ticket.estado == "Abierto" %}
+                <span class="status abierto">{{ ticket.estado }}</span>
+              {% elif ticket.estado == "En progreso" %}
+                <span class="status progreso">{{ ticket.estado }}</span>
+              {% else %}
+                <span class="status cerrado">{{ ticket.estado }}</span>
+              {% endif %}
+            </td>
+            <td>{{ ticket.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align:center;">{{ _('No hay tickets en la categoría Soporte') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

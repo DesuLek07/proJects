@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mensajería - Mesa de Ayuda</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <h2>📨 Conversaciones</h2>
+    <ul class="chat-list">
+      {% for u in usuarios %}
+        <li>
+          <a href="{{ url_for('chat_privado', receiver_id=u.id) }}">
+            {{ u.primer_nombre }} {{ u.primer_apellido }} 
+            <span class="rol">{{ u.rol.tipo_rol }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>

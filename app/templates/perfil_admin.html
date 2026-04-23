@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="stylesheet" href="../static/dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil - Mesa de Ayuda</title>
+</head>
+<body>
+  <!-- Sidebar -->
+    {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>Perfil de {{rol}} 👤</h1>
+    </header>
+
+    <!-- Perfil Card -->
+    <section class="cards">
+      <div class="card" style="grid-column: span 3; text-align: left;">
+        <h3>Información del Usuario</h3>
+        <p><strong>Nombre completo:</strong> {{nombre}} </p>
+        <p><strong>Correo:</strong> {{correo}} </p>
+        <p><strong>Documento:</strong> {{documento}} </p>
+        <p><strong>Rol:</strong> {{rol}} </p>
+      </div>
+    </section>
+
+    <!-- Acciones -->
+    <section class="tickets">
+      <h2>Acciones</h2>
+      <div style="display: flex; gap: 15px;">
+        <a href="{{ url_for('dashboard_admin') }}" class="btn">⬅️ Volver al Dashboard</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">🚪 Cerrar Sesión</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

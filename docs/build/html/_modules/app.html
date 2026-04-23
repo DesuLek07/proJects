@@ -1,0 +1,989 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app &mdash; documentación de Dongo - 2.3</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=ecb1fb6c"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Dongo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido / Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chat_socket.html">chat_socket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Dongo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Dongo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para app</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dongo HelpDesk - Aplicación principal / Main application module</span>
+<span class="sd">---------------------------------------------------------------</span>
+
+<span class="sd">Proyecto:</span>
+<span class="sd">    Dongo HelpDesk</span>
+
+<span class="sd">Descripción:</span>
+<span class="sd">    Módulo principal que define las rutas HTTP, validaciones, y eventos en tiempo real</span>
+<span class="sd">    (Socket.IO) para el sistema de mesa de ayuda. Contiene autenticación básica,</span>
+<span class="sd">    CRUD de tickets, vistas de dashboard y chat (público y privado).</span>
+
+<span class="sd">    Main module that defines HTTP routes, validations, and real-time events</span>
+<span class="sd">    (Socket.IO) for the help desk system. Contains basic authentication,</span>
+<span class="sd">    ticket CRUD, dashboard views and chat (public and private).</span>
+
+<span class="sd">Autores:</span>
+<span class="sd">    Miguel Angel Leon Leon</span>
+<span class="sd">    Sara Camila Guarin Guerrero</span>
+<span class="sd">    Luis Alejandro Narvaez Talavera</span>
+
+<span class="sd">Tecnologías:</span>
+<span class="sd">    - Flask</span>
+<span class="sd">    - Flask-SocketIO</span>
+<span class="sd">    - SQLAlchemy (ORM)</span>
+<span class="sd">    - Python 3.x</span>
+
+<span class="sd">Notas:</span>
+<span class="sd">    - Este archivo asume que el módulo `models` provee: sesion, Usuarios, Tickets,</span>
+<span class="sd">      RespuestasTickets, Mensajes (modelos SQLAlchemy).</span>
+<span class="sd">    - Las docstrings están en estilo Google para compatibilidad con Sphinx + napoleon.</span>
+
+<span class="sd">    This file assumes that the `models` module provides: sesion, Usuarios, Tickets,</span>
+<span class="sd">    RespuestasTickets, Mensajes (SQLAlchemy models).</span>
+<span class="sd">    Docstrings use Google style for compatibility with Sphinx + napoleon.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">flash</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask_socketio</span><span class="w"> </span><span class="kn">import</span> <span class="n">SocketIO</span><span class="p">,</span> <span class="n">send</span><span class="p">,</span> <span class="n">emit</span><span class="p">,</span> <span class="n">join_room</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">models</span><span class="w"> </span><span class="kn">import</span> <span class="n">sesion</span><span class="p">,</span> <span class="n">Usuarios</span><span class="p">,</span> <span class="n">Tickets</span><span class="p">,</span> <span class="n">RespuestasTickets</span><span class="p">,</span> <span class="n">Mensajes</span>
+
+<span class="c1"># -----------------------------</span>
+<span class="c1"># Configuración de la app</span>
+<span class="c1"># -----------------------------</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">socketio</span> <span class="o">=</span> <span class="n">SocketIO</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">cors_allowed_origins</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+<span class="n">rooms</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: Diccionario temporal para mapear username -&gt; room en memoria (no persistente).</span>
+<span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="s1">&#39;p4ssw0rd_hyp4r_s4cUr4&#39;</span>  <span class="c1">#: Clave de sesión (reemplazar en producción).</span>
+
+<span class="c1"># ============================</span>
+<span class="c1">#  VALIDACIONES (regex)</span>
+<span class="c1"># ============================</span>
+<span class="c1">#: Expresión regular para validar nombres de usuario (4–20 caracteres alfanuméricos o guión bajo).</span>
+<span class="n">USERNAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9_]{4,20}$&#39;</span><span class="p">)</span>
+
+<span class="c1">#: Expresión regular para validar contraseñas (mínimo 6 caracteres, con letras y números).</span>
+<span class="n">PASSWORD_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$*%^&amp;+=!]{6,20}$&#39;</span><span class="p">)</span>
+
+<span class="c1">#: Expresión regular para correos electrónicos.</span>
+<span class="n">EMAIL_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[\w\.-]+@[\w\.-]+\.\w{2,4}$&#39;</span><span class="p">)</span>
+
+<span class="c1">#: Expresión regular para nombres (incluye acentos y ñ).</span>
+<span class="n">NAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{2,30}$&#39;</span><span class="p">)</span>
+
+<span class="c1">#: Expresión regular para números de documento (6 a 12 dígitos).</span>
+<span class="n">DOC_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d{6,12}$&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  RUTAS PÚBLICAS / AUTH</span>
+<span class="c1"># ============================</span>
+
+<div class="viewcode-block" id="raiz">
+<a class="viewcode-back" href="../app.html#app.raiz">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">raiz</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Redirige a la página de login.</span>
+<span class="sd">    Redirects to the login page.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        werkzeug Response: Redirección a la ruta &#39;login&#39;.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        Ruta raíz que simplemente envía a /login.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="login">
+<a class="viewcode-back" href="../app.html#app.login">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maneja la pantalla de inicio de sesión y la autenticación de usuarios.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Si el método es GET, renderiza el template &#39;login.html&#39;.</span>
+<span class="sd">        - Si el método es POST, valida username/password con regex y consulta la BD.</span>
+<span class="sd">        - Si es válido, guarda información en la sesión y redirige según el rol.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        - GET renders &#39;login.html&#39;.</span>
+<span class="sd">        - POST validates username/password via regex and queries DB.</span>
+<span class="sd">        - On success, stores session info and redirects according to user role.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;login.html&#39;) o redirect a dashboard según rol.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Validaciones rápidas</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">USERNAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;El nombre de usuario no es válido&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PASSWORD_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;La contraseña no cumple con los requisitos mínimos&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Consulta en la base de datos</span>
+        <span class="n">usuario</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">Usuarios</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">username</span><span class="p">,</span> <span class="n">Usuarios</span><span class="o">.</span><span class="n">contrasena</span> <span class="o">==</span> <span class="n">password</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">usuario</span><span class="p">:</span>
+            <span class="c1"># Guardar en sesión datos mínimos</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;usuario&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">username</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;rol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span><span class="o">.</span><span class="n">tipo_rol</span>
+
+            <span class="c1"># Redirección según rol</span>
+            <span class="k">if</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span><span class="o">.</span><span class="n">tipo_rol</span> <span class="o">==</span> <span class="s1">&#39;Administrador&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;dashboard_admin&#39;</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span><span class="o">.</span><span class="n">tipo_rol</span> <span class="o">==</span> <span class="s1">&#39;Soporte&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;dashboard_soporte&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;dashboard&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Usuario o contraseña incorrectos&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="register">
+<a class="viewcode-back" href="../app.html#app.register">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/register&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Registra un nuevo usuario en la base de datos.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Valida entradas (documento, nombres, username, correo, password) con regex.</span>
+<span class="sd">        - Crea instancia de Usuarios y la persiste.</span>
+<span class="sd">        - Maneja errores de integridad (duplicados) y muestra mensajes pertinentes.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        - Validates inputs (document, names, username, email, password) with regex.</span>
+<span class="sd">        - Creates a Usuarios instance and persists it.</span>
+<span class="sd">        - Handles IntegrityError (duplicates) presenting appropriate messages.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;register.html&#39;) o redirect a &#39;login&#39; al registrarse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">tipo_documento</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tipo_de_documento&#39;</span><span class="p">)</span>
+        <span class="n">numero_documento</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;numberd&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">primer_nombre</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primer_nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">segundo_nombre</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;segundo_nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">primer_apellido</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primer_apellido&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">segundo_apellido</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;segundo_apellido&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">correo</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;correo&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Validaciones con regex</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">DOC_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">numero_documento</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Número de documento inválido&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">primer_nombre</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">primer_apellido</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Nombre o apellido inválidos&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">segundo_nombre</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">segundo_nombre</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Segundo nombre inválido&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">segundo_apellido</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">NAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">segundo_apellido</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Segundo apellido inválido&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">USERNAME_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;El nombre de usuario debe tener entre 4 y 20 caracteres (letras/números/_).&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">EMAIL_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">correo</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Correo electrónico inválido&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PASSWORD_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;La contraseña debe tener entre 6-20 caracteres, al menos una letra y un número.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Guardar usuario y manejar unique constraints</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">usuario</span> <span class="o">=</span> <span class="n">Usuarios</span><span class="p">(</span>
+                <span class="n">tipo_documento</span><span class="o">=</span><span class="n">tipo_documento</span><span class="p">,</span>
+                <span class="n">numero_documento</span><span class="o">=</span><span class="n">numero_documento</span><span class="p">,</span>
+                <span class="n">primer_nombre</span><span class="o">=</span><span class="n">primer_nombre</span><span class="p">,</span>
+                <span class="n">segundo_nombre</span><span class="o">=</span><span class="n">segundo_nombre</span><span class="p">,</span>
+                <span class="n">primer_apellido</span><span class="o">=</span><span class="n">primer_apellido</span><span class="p">,</span>
+                <span class="n">segundo_apellido</span><span class="o">=</span><span class="n">segundo_apellido</span><span class="p">,</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">correo</span><span class="o">=</span><span class="n">correo</span><span class="p">,</span>
+                <span class="n">contrasena</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                <span class="n">rol_id</span><span class="o">=</span><span class="mi">3</span>  <span class="c1"># Asigna rol por defecto (Usuario)</span>
+            <span class="p">)</span>
+            <span class="n">sesion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+            <span class="n">sesion</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;¡Registro exitoso! Ya puedes iniciar sesión.&#39;</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Log simplificado; en producción usar logger</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️ Error SQL exacto:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span>
+            <span class="n">sesion</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c1"># Mensajes más descriptivos según constraint</span>
+            <span class="k">if</span> <span class="s2">&quot;numero_documento&quot;</span> <span class="ow">in</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;numero_documento&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">):</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Ese número de documento ya está registrado.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">):</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Ese nombre de usuario ya existe, elige otro.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;correo&quot;</span> <span class="ow">in</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;correo&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">):</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Ese correo ya está en uso.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Error al registrar, intenta con otros datos.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="logout">
+<a class="viewcode-back" href="../app.html#app.logout">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Limpia la sesión del usuario y redirige a la página de login.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Clears the user&#39;s session and redirects to the login page.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: redirect a &#39;login&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  DASHBOARDS Y PERFIL</span>
+<span class="c1"># ============================</span>
+
+<div class="viewcode-block" id="dashboard">
+<a class="viewcode-back" href="../app.html#app.dashboard">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dashboard</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dashboard principal para usuarios regulares.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Requiere que exista &#39;user_id&#39; en sesión.</span>
+<span class="sd">        - Obtiene estadísticas de tickets del usuario y la lista de sus tickets.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        - Requires &#39;user_id&#39; in session.</span>
+<span class="sd">        - Retrieves ticket stats and list for the user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;dashboard.html&#39;, ...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Usuarios</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">nombre</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">primer_nombre</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="s1">&#39;Invitado&#39;</span>
+
+        <span class="n">abiertos</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">usuario_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;Abierto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">progreso</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">usuario_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;En progreso&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">cerrados</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">usuario_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;Cerrado&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+        <span class="n">tickets</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">usuario_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span>
+            <span class="s1">&#39;dashboard.html&#39;</span><span class="p">,</span>
+            <span class="n">tickets</span><span class="o">=</span><span class="n">tickets</span><span class="p">,</span>
+            <span class="n">abiertos</span><span class="o">=</span><span class="n">abiertos</span><span class="p">,</span>
+            <span class="n">progreso</span><span class="o">=</span><span class="n">progreso</span><span class="p">,</span>
+            <span class="n">cerrados</span><span class="o">=</span><span class="n">cerrados</span><span class="p">,</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="n">nombre</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="dashboard_admin">
+<a class="viewcode-back" href="../app.html#app.dashboard_admin">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard_admin&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dashboard_admin</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dashboard para administradores.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Muestra usuarios, tickets y estadísticas globales.</span>
+<span class="sd">    English:</span>
+<span class="sd">        - Shows users, tickets and overall statistics.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;dashboard_admin.html&#39;, ...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">usuarios</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">total_usuarios</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">usuarios</span><span class="p">)</span>
+
+    <span class="n">tickets</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">tickets_abiertos</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">estado</span><span class="o">=</span><span class="s2">&quot;Abierto&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">tickets_progreso</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">estado</span><span class="o">=</span><span class="s2">&quot;En progreso&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">tickets_cerrados</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">estado</span><span class="o">=</span><span class="s2">&quot;Cerrado&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span>
+        <span class="s2">&quot;dashboard_admin.html&quot;</span><span class="p">,</span>
+        <span class="n">usuarios</span><span class="o">=</span><span class="n">usuarios</span><span class="p">,</span>
+        <span class="n">tickets</span><span class="o">=</span><span class="n">tickets</span><span class="p">,</span>
+        <span class="n">total_usuarios</span><span class="o">=</span><span class="n">total_usuarios</span><span class="p">,</span>
+        <span class="n">tickets_abiertos</span><span class="o">=</span><span class="n">tickets_abiertos</span><span class="p">,</span>
+        <span class="n">tickets_progreso</span><span class="o">=</span><span class="n">tickets_progreso</span><span class="p">,</span>
+        <span class="n">tickets_cerrados</span><span class="o">=</span><span class="n">tickets_cerrados</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dashboard_soporte">
+<a class="viewcode-back" href="../app.html#app.dashboard_soporte">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard_soporte&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dashboard_soporte</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dashboard para el personal de soporte.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Muestra tickets que no estén cerrados.</span>
+<span class="sd">    English:</span>
+<span class="sd">        - Shows tickets that are not closed.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;dashboard_soporte.html&#39;, tickets=tickets)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">tickets</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">!=</span> <span class="s1">&#39;Cerrado&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;dashboard_soporte.html&#39;</span><span class="p">,</span> <span class="n">tickets</span><span class="o">=</span><span class="n">tickets</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="perfil">
+<a class="viewcode-back" href="../app.html#app.perfil">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/perfil&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">perfil</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra el perfil del usuario actual.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Construye nombre completo, correo, documento y rol para mostrar.</span>
+<span class="sd">    English:</span>
+<span class="sd">        - Builds full name, email, document and role to display.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;perfil.html&#39;, ...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="n">usuario</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Usuarios</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="n">nombre</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">primer_nombre</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">primer_apellido</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">segundo_apellido</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">usuario</span> <span class="k">else</span> <span class="s1">&#39;Invitado&#39;</span>
+        <span class="n">correo</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">correo</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">correo</span> <span class="k">else</span> <span class="s1">&#39;No tiene correo&#39;</span>
+        <span class="n">documento</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">tipo_documento</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">numero_documento</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">tipo_documento</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">numero_documento</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
+        <span class="n">rol</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span><span class="o">.</span><span class="n">tipo_rol</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span> <span class="k">else</span> <span class="s1">&#39;Invitado&#39;</span>
+
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;perfil.html&#39;</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="n">nombre</span><span class="p">,</span> <span class="n">correo</span><span class="o">=</span><span class="n">correo</span><span class="p">,</span> <span class="n">documento</span><span class="o">=</span><span class="n">documento</span><span class="p">,</span> <span class="n">rol</span><span class="o">=</span><span class="n">rol</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="perfil_admin">
+<a class="viewcode-back" href="../app.html#app.perfil_admin">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/perfil_admin&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">perfil_admin</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra perfil del administrador actualmente autenticado.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Shows the current authenticated administrator profile.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;perfil_admin.html&#39;, ...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="n">usuario</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Usuarios</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="n">nombre</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">primer_nombre</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">primer_apellido</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">segundo_apellido</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">usuario</span> <span class="k">else</span> <span class="s1">&#39;Invitado&#39;</span>
+        <span class="n">correo</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">correo</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">correo</span> <span class="k">else</span> <span class="s1">&#39;No tiene correo&#39;</span>
+        <span class="n">documento</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">tipo_documento</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">usuario</span><span class="o">.</span><span class="n">numero_documento</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">tipo_documento</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">numero_documento</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
+        <span class="n">rol</span> <span class="o">=</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span><span class="o">.</span><span class="n">tipo_rol</span> <span class="k">if</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">usuario</span><span class="o">.</span><span class="n">rol</span> <span class="k">else</span> <span class="s1">&#39;Invitado&#39;</span>
+
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;perfil_admin.html&#39;</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="n">nombre</span><span class="p">,</span> <span class="n">correo</span><span class="o">=</span><span class="n">correo</span><span class="p">,</span> <span class="n">documento</span><span class="o">=</span><span class="n">documento</span><span class="p">,</span> <span class="n">rol</span><span class="o">=</span><span class="n">rol</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  TICKETS (crear, ver, cerrar)</span>
+<span class="c1"># ============================</span>
+
+<div class="viewcode-block" id="crear_ticket">
+<a class="viewcode-back" href="../app.html#app.crear_ticket">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/crear_ticket&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">crear_ticket</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crea un nuevo ticket para el usuario autenticado.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Si POST: valida título y descripción y guarda el ticket.</span>
+<span class="sd">        - Si GET: renderiza el formulario de creación.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        - POST: validates title and description and saves ticket.</span>
+<span class="sd">        - GET: renders the creation form.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;crear_ticket.html&#39;) o redirect al dashboard.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="n">titulo</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;titulo&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">descripcion</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;descripcion&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">categoria</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;categoria&#39;</span><span class="p">)</span>
+            <span class="n">prioridad</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prioridad&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">titulo</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">descripcion</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;El título y la descripción son obligatorios.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;crear_ticket.html&#39;</span><span class="p">)</span>
+
+            <span class="n">ticket</span> <span class="o">=</span> <span class="n">Tickets</span><span class="p">(</span>
+                <span class="n">titulo</span><span class="o">=</span><span class="n">titulo</span><span class="p">,</span>
+                <span class="n">descripcion</span><span class="o">=</span><span class="n">descripcion</span><span class="p">,</span>
+                <span class="n">categoria</span><span class="o">=</span><span class="n">categoria</span><span class="p">,</span>
+                <span class="n">prioridad</span><span class="o">=</span><span class="n">prioridad</span><span class="p">,</span>
+                <span class="n">usuario_id</span><span class="o">=</span><span class="n">user_id</span>
+            <span class="p">)</span>
+
+            <span class="n">sesion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ticket</span><span class="p">)</span>
+            <span class="n">sesion</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;¡Se ha enviado tu ticket!&#39;</span><span class="p">,</span> <span class="s1">&#39;alert&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;dashboard&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;crear_ticket.html&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="ver_ticket">
+<a class="viewcode-back" href="../app.html#app.ver_ticket">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/ver_ticket/&lt;int:ticket_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ver_ticket</span><span class="p">(</span><span class="n">ticket_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista detallada de un ticket. Permite cambiar estado/prioridad y agregar respuestas.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ticket_id (int): ID del ticket a visualizar.</span>
+
+<span class="sd">    Spanish:</span>
+<span class="sd">        - Si POST: procesa cambios de estado/prioridad y agrega respuesta si existe.</span>
+<span class="sd">    English:</span>
+<span class="sd">        - POST: processes state/priority changes and adds a response if provided.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;ver_ticket.html&#39;, ticket=ticket, respuestas=respuestas)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">ticket</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">ticket_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ticket</span><span class="p">:</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;El ticket no existe o fue eliminado.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;gestion_tickets&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">nuevo_estado</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;estado&#39;</span><span class="p">)</span>
+        <span class="n">nueva_prioridad</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prioridad&#39;</span><span class="p">)</span>
+        <span class="n">respuesta_texto</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;respuesta&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nuevo_estado</span><span class="p">:</span>
+            <span class="n">ticket</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">nuevo_estado</span>
+        <span class="k">if</span> <span class="n">nueva_prioridad</span><span class="p">:</span>
+            <span class="n">ticket</span><span class="o">.</span><span class="n">prioridad</span> <span class="o">=</span> <span class="n">nueva_prioridad</span>
+        <span class="k">if</span> <span class="n">respuesta_texto</span><span class="p">:</span>
+            <span class="n">nueva_respuesta</span> <span class="o">=</span> <span class="n">RespuestasTickets</span><span class="p">(</span>
+                <span class="n">ticket_id</span><span class="o">=</span><span class="n">ticket</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">usuario_id</span><span class="o">=</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">],</span>
+                <span class="n">mensaje</span><span class="o">=</span><span class="n">respuesta_texto</span>
+            <span class="p">)</span>
+            <span class="n">sesion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nueva_respuesta</span><span class="p">)</span>
+
+        <span class="n">sesion</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Cambios guardados correctamente.&#39;</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;ver_ticket&#39;</span><span class="p">,</span> <span class="n">ticket_id</span><span class="o">=</span><span class="n">ticket</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="n">respuestas</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RespuestasTickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">ticket_id</span><span class="o">=</span><span class="n">ticket</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;ver_ticket.html&#39;</span><span class="p">,</span> <span class="n">ticket</span><span class="o">=</span><span class="n">ticket</span><span class="p">,</span> <span class="n">respuestas</span><span class="o">=</span><span class="n">respuestas</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="cerrar_ticket">
+<a class="viewcode-back" href="../app.html#app.cerrar_ticket">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/cerrar_ticket/&lt;int:ticket_id&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cerrar_ticket</span><span class="p">(</span><span class="n">ticket_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cambia el estado del ticket a &#39;Cerrado&#39; y registra la fecha de solución.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ticket_id (int): ID del ticket a cerrar.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: redirect a &#39;gestion_tickets&#39; con mensaje flash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">ticket</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">ticket_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ticket</span><span class="p">:</span>
+        <span class="n">ticket</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;Cerrado&#39;</span>
+        <span class="n">ticket</span><span class="o">.</span><span class="n">fecha_solucion</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">sesion</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Ticket cerrado correctamente.&#39;</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;No se encontró el ticket.&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;gestion_tickets&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="ver_ticket_usuario">
+<a class="viewcode-back" href="../app.html#app.ver_ticket_usuario">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/usuario/ticket/&lt;int:ticket_id&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ver_ticket_usuario</span><span class="p">(</span><span class="n">ticket_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista pública/usuario que muestra un ticket y sus respuestas ordenadas cronológicamente.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ticket_id (int): ID del ticket.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;ver_ticket_usuario.html&#39;, ticket=ticket, respuestas=respuestas)</span>
+<span class="sd">                 o (str, int) si no se encuentra.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ticket</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">ticket_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ticket</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Ticket no encontrado&quot;</span><span class="p">,</span> <span class="mi">404</span>
+
+    <span class="n">respuestas</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RespuestasTickets</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">ticket_id</span><span class="o">=</span><span class="n">ticket_id</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">RespuestasTickets</span><span class="o">.</span><span class="n">fecha_respuesta</span><span class="o">.</span><span class="n">asc</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;ver_ticket_usuario.html&#39;</span><span class="p">,</span> <span class="n">ticket</span><span class="o">=</span><span class="n">ticket</span><span class="p">,</span> <span class="n">respuestas</span><span class="o">=</span><span class="n">respuestas</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="gestion_tickets">
+<a class="viewcode-back" href="../app.html#app.gestion_tickets">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/gestion_tickets&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gestion_tickets</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listado y gestión de tickets con filtros opcionales.</span>
+
+<span class="sd">    Query params:</span>
+<span class="sd">        - estado: filtra por estado del ticket (e.g., &#39;Abierto&#39;)</span>
+<span class="sd">        - categoria: filtra por categoría</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;gestion_tickets.html&#39;, ...) con listas y estadísticas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">estado</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;estado&#39;</span><span class="p">)</span>
+    <span class="n">categoria</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;categoria&#39;</span><span class="p">)</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">estado</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="n">estado</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">categoria</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">categoria</span> <span class="o">==</span> <span class="n">categoria</span><span class="p">)</span>
+
+    <span class="n">tickets</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">fecha_creacion</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">usuarios</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="n">total_usuarios</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">tickets_abiertos</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s2">&quot;Abierto&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">tickets_progreso</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s2">&quot;En progreso&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">tickets_cerrados</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Tickets</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tickets</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s2">&quot;Cerrado&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span>
+        <span class="s1">&#39;gestion_tickets.html&#39;</span><span class="p">,</span>
+        <span class="n">usuarios</span><span class="o">=</span><span class="n">usuarios</span><span class="p">,</span>
+        <span class="n">tickets</span><span class="o">=</span><span class="n">tickets</span><span class="p">,</span>
+        <span class="n">total_usuarios</span><span class="o">=</span><span class="n">total_usuarios</span><span class="p">,</span>
+        <span class="n">tickets_abiertos</span><span class="o">=</span><span class="n">tickets_abiertos</span><span class="p">,</span>
+        <span class="n">tickets_progreso</span><span class="o">=</span><span class="n">tickets_progreso</span><span class="p">,</span>
+        <span class="n">tickets_cerrados</span><span class="o">=</span><span class="n">tickets_cerrados</span><span class="p">,</span>
+        <span class="n">estado</span><span class="o">=</span><span class="n">estado</span><span class="p">,</span>
+        <span class="n">categoria</span><span class="o">=</span><span class="n">categoria</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  CHAT (general/admin + privado persistente)</span>
+<span class="c1"># ============================</span>
+
+<div class="viewcode-block" id="chat_admin">
+<a class="viewcode-back" href="../app.html#app.chat_admin">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/chat_admin&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chat_admin</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para el chat general o sala de admin según rol.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Renders a chat template and define which room usar (sala_general o sala_admin).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;chat_admin.html&#39;, username=username, room=room, rol=rol)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;usuario&#39;</span><span class="p">)</span>
+    <span class="n">rol</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rol&#39;</span><span class="p">)</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="s1">&#39;sala_general&#39;</span> <span class="k">if</span> <span class="n">rol</span> <span class="o">!=</span> <span class="s1">&#39;Administrador&#39;</span> <span class="k">else</span> <span class="s1">&#39;sala_admin&#39;</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;chat_admin.html&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">,</span> <span class="n">rol</span><span class="o">=</span><span class="n">rol</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="lista_chats">
+<a class="viewcode-back" href="../app.html#app.lista_chats">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/chat_privado&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lista_chats</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lista de usuarios para iniciar un chat privado.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Returns a list of other users (excludes current user) to start private chats.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;lista_chats.html&#39;, usuarios=usuarios)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
+    <span class="n">usuarios</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Usuarios</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;lista_chats.html&#39;</span><span class="p">,</span> <span class="n">usuarios</span><span class="o">=</span><span class="n">usuarios</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="chat_privado">
+<a class="viewcode-back" href="../app.html#app.chat_privado">[documentos]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/chat/&lt;int:receiver_id&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chat_privado</span><span class="p">(</span><span class="n">receiver_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra la conversación privada entre el usuario en sesión y otro usuario.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        receiver_id (int): ID del usuario receptor.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: render_template(&#39;chat_privado.html&#39;, mensajes=mensajes, receiver=receiver)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
+    <span class="n">mensajes</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Mensajes</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="p">((</span><span class="n">Mensajes</span><span class="o">.</span><span class="n">sender_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mensajes</span><span class="o">.</span><span class="n">receiver_id</span> <span class="o">==</span> <span class="n">receiver_id</span><span class="p">))</span> <span class="o">|</span>
+            <span class="p">((</span><span class="n">Mensajes</span><span class="o">.</span><span class="n">sender_id</span> <span class="o">==</span> <span class="n">receiver_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mensajes</span><span class="o">.</span><span class="n">receiver_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Mensajes</span><span class="o">.</span><span class="n">fecha_envio</span><span class="o">.</span><span class="n">asc</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">sesion</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Usuarios</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">receiver_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;chat_privado.html&#39;</span><span class="p">,</span> <span class="n">mensajes</span><span class="o">=</span><span class="n">mensajes</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  SOCKET.IO - Eventos</span>
+<span class="c1"># ============================</span>
+
+<div class="viewcode-block" id="handle_join">
+<a class="viewcode-back" href="../app.html#app.handle_join">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;join&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_join</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evento Socket.IO: &#39;join&#39;</span>
+<span class="sd">    - El usuario se une a una sala pública o de admin.</span>
+<span class="sd">    - Mapea username -&gt; room en memoria y emite un mensaje de notificación.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (dict): { &#39;username&#39;: str, &#39;room&#39;: str }</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Socket.IO &#39;join&#39; event for joining public/admin room.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: Emite un evento &#39;message&#39; al room.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;room&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">room</span><span class="p">:</span>
+        <span class="n">join_room</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+        <span class="n">rooms</span><span class="p">[</span><span class="n">username</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="n">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;🟢 </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> se ha unido al chat.&quot;</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_message">
+<a class="viewcode-back" href="../app.html#app.handle_message">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_message</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evento Socket.IO: &#39;message&#39;</span>
+<span class="sd">    - Envía mensajes a la sala indicada (no persiste en BD).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (dict): { &#39;username&#39;: str, &#39;msg&#39;: str, &#39;room&#39;: str }</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Sends a chat message to the specified room. Timestamped on server.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: Usa send(...) para enviar a la sala.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;msg&#39;</span><span class="p">)</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;room&#39;</span><span class="p">)</span>
+    <span class="n">hora</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">mensaje</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">hora</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">room</span><span class="p">:</span>
+        <span class="n">send</span><span class="p">({</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="n">mensaje</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_disconnect">
+<a class="viewcode-back" href="../app.html#app.handle_disconnect">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;disconnect&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_disconnect</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evento Socket.IO: &#39;disconnect&#39;</span>
+<span class="sd">    - Notifica que un usuario salió del chat y elimina su mapeo en memoria.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Notifies rooms that a user disconnected and removes them from the in-memory map.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">room</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;🔴 </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> salió del chat.&quot;</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+        <span class="c1"># Elimina la primera coincidencia y rompe para evitar modificar dict durante iteración</span>
+        <span class="k">del</span> <span class="n">rooms</span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
+        <span class="k">break</span></div>
+
+
+
+<div class="viewcode-block" id="handle_join_private">
+<a class="viewcode-back" href="../app.html#app.handle_join_private">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;join_private&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_join_private</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evento Socket.IO: &#39;join_private&#39;</span>
+<span class="sd">    - Permite a dos usuarios unirse a una sala privada calculada por sus IDs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (dict): { &#39;user_id&#39;: int, &#39;target_id&#39;: int }</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: realiza join_room a la sala privada y emite un mensaje.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">target_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target_id&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">target_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">room</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;chat_</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">target_id</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">target_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">join_room</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+    <span class="n">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;🟢 Se unió al chat.&quot;</span><span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_private_message">
+<a class="viewcode-back" href="../app.html#app.handle_private_message">[documentos]</a>
+<span class="nd">@socketio</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;private_message&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_private_message</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evento Socket.IO: &#39;private_message&#39;</span>
+<span class="sd">    - Guarda el mensaje privado en la base de datos y lo envía a la sala privada.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (dict): { &#39;sender_id&#39;: int, &#39;receiver_id&#39;: int, &#39;msg&#39;: str }</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Persists the private message and broadcasts it to the private chat room.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sender_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sender_id&#39;</span><span class="p">)</span>
+    <span class="n">receiver_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;receiver_id&#39;</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;msg&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sender_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">receiver_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">hora</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Guardar en BD</span>
+    <span class="n">nuevo_mensaje</span> <span class="o">=</span> <span class="n">Mensajes</span><span class="p">(</span>
+        <span class="n">sender_id</span><span class="o">=</span><span class="n">sender_id</span><span class="p">,</span>
+        <span class="n">receiver_id</span><span class="o">=</span><span class="n">receiver_id</span><span class="p">,</span>
+        <span class="n">contenido</span><span class="o">=</span><span class="n">msg</span>
+    <span class="p">)</span>
+    <span class="n">sesion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nuevo_mensaje</span><span class="p">)</span>
+    <span class="n">sesion</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">room</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;chat_</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">sender_id</span><span class="p">,</span><span class="w"> </span><span class="n">receiver_id</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">sender_id</span><span class="p">,</span><span class="w"> </span><span class="n">receiver_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">send</span><span class="p">({</span>
+        <span class="s1">&#39;msg&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">hora</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;sender_id&#39;</span><span class="p">:</span> <span class="n">sender_id</span>
+    <span class="p">},</span> <span class="n">room</span><span class="o">=</span><span class="n">room</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ============================</span>
+<span class="c1">#  RUN</span>
+<span class="c1"># ============================</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Punto de entrada principal del servidor Flask.</span>
+
+<span class="sd">    English:</span>
+<span class="sd">        Main entry point for the Flask + Socket.IO server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5860</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Miguel Angel Leon Leon, Sara Camila Guarin Guerrero, Luis Alejandro Narvaez Talavera.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

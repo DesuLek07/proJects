@@ -1,0 +1,34 @@
+<aside class="sidebar">
+  <h2 class="logo">Mesa de Ayuda</h2>
+  <nav>
+    {% if session['rol'] == 'Administrador' %}
+      <a href="{{ url_for('dashboard_admin') }}">👥 {{ _('Usuarios') }}</a>
+      <a href="{{ url_for('gestion_tickets') }}">🎫 {{ _('Tickets') }}</a>
+      <a href="{{ url_for('chat_admin') }}">💬 {{ _('Chat Admins') }}</a>
+      <a href="{{ url_for('lista_chats') }}">🔔 {{ _('Chat Privado') }}</a>
+      <a href="{{ url_for('perfil_admin') }}">👤 {{ _('Perfil') }}</a>
+      <a href="{{ url_for('reportes') }}">📊 {{ _('Reportes') }}</a>
+
+    {% elif session['rol'] == 'Soporte' %}
+      <a href="{{ url_for('dashboard_soporte') }}">📋 {{ _('Panel de Soporte') }}</a>
+      <a href="{{ url_for('gestion_tickets_soporte') }}">🎫 {{ _('Tickets Asignados') }}</a>
+      <a href="{{ url_for('lista_chats') }}">💬 {{ _('Mensajes') }}</a>
+      <a href="{{ url_for('perfil_soporte') }}">👤 {{ _('Perfil') }}</a>
+
+    {% else %}
+      <a href="{{ url_for('dashboard') }}">📋 {{ _('Mis Tickets') }}</a>
+      <a href="{{ url_for('crear_ticket') }}">🎫 {{ _('Crear Ticket') }}</a>
+      <a href="{{ url_for('lista_chats') }}">🔔 {{ _('Chat Privado') }}</a>
+      <a href="{{ url_for('perfil') }}">👤 {{ _('Perfil') }}</a>
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">🚪 {{ _('Cerrar Sesión') }}</a>
+
+    <!-- Selector de idioma -->
+    <div class="language-switch" style="margin-top: 100px; text-align:center;">
+      🌎 {{ _('Idioma') }}:
+      <a href="{{ url_for('set_language', lang_code='es') }}">Español</a> |
+      <a href="{{ url_for('set_language', lang_code='en') }}">English</a>
+    </div>
+  </nav>
+</aside>

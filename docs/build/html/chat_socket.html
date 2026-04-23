@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chat_socket module &mdash; documentación de Dongo - 2.3</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=ecb1fb6c"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="models module" href="models.html" />
+    <link rel="prev" title="app module" href="app.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Dongo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido / Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">chat_socket module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dongo-helpdesk-modulo-de-chat-en-tiempo-real">Dongo HelpDesk - Módulo de Chat en Tiempo Real</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modulo-desarrollado-por">Módulo desarrollado por:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.handle_disconnect"><code class="docutils literal notranslate"><span class="pre">handle_disconnect()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.handle_join"><code class="docutils literal notranslate"><span class="pre">handle_join()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.handle_message"><code class="docutils literal notranslate"><span class="pre">handle_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.rooms"><code class="docutils literal notranslate"><span class="pre">rooms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chat_socket.socketio"><code class="docutils literal notranslate"><span class="pre">socketio</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Dongo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Dongo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">chat_socket module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/chat_socket.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-chat_socket">
+<span id="chat-socket-module"></span><h1>chat_socket module<a class="headerlink" href="#module-chat_socket" title="Link to this heading"></a></h1>
+<section id="dongo-helpdesk-modulo-de-chat-en-tiempo-real">
+<h2>Dongo HelpDesk - Módulo de Chat en Tiempo Real<a class="headerlink" href="#dongo-helpdesk-modulo-de-chat-en-tiempo-real" title="Link to this heading"></a></h2>
+<p>Este módulo implementa el chat en tiempo real para el sistema <strong>Dongo HelpDesk</strong>,
+utilizando Flask y Flask-SocketIO. Permite la comunicación entre usuarios y administradores
+dentro de salas dinámicas.</p>
+<p>This module implements the real-time chat system for <strong>Dongo HelpDesk</strong>,
+using Flask and Flask-SocketIO. It enables communication between users and administrators
+inside dynamic chat rooms.</p>
+<section id="modulo-desarrollado-por">
+<h3>Módulo desarrollado por:<a class="headerlink" href="#modulo-desarrollado-por" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Miguel Ángel León León</p></li>
+<li><p>Sara Camila Guarín Guerrero</p></li>
+<li><p>Luis Alejandro Narváez Talavera</p></li>
+</ul>
+<p>Fecha: Octubre 2025</p>
+</section>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="chat_socket.app">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">app</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Flask</span> <span class="pre">'chat_socket'&gt;</span></em><a class="headerlink" href="#chat_socket.app" title="Link to this definition"></a></dt>
+<dd><p>Instancia principal de la aplicación Flask.
+Main Flask application instance.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chat_socket.handle_disconnect">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">handle_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/chat_socket.html#handle_disconnect"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#chat_socket.handle_disconnect" title="Link to this definition"></a></dt>
+<dd><p>Maneja la desconexión de un usuario.
+Handles user disconnection.</p>
+<section id="emits">
+<h2>Emits<a class="headerlink" href="#emits" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>message<span class="classifier">dict</span></dt><dd><p>Envía un mensaje notificando que el usuario salió del chat.
+Sends a message notifying that the user left the chat.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chat_socket.handle_join">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">handle_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chat_socket.html#handle_join"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#chat_socket.handle_join" title="Link to this definition"></a></dt>
+<dd><p>Maneja el evento cuando un usuario se une a una sala.
+Handles the event when a user joins a chat room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Diccionario con las claves <code class="docutils literal notranslate"><span class="pre">username</span></code> (nombre de usuario) y <code class="docutils literal notranslate"><span class="pre">room</span></code> (sala a la que se une).
+Dictionary with keys <code class="docutils literal notranslate"><span class="pre">username</span></code> (user name) and <code class="docutils literal notranslate"><span class="pre">room</span></code> (room joined).</p></li>
+<li><p><strong>Emits</strong></p></li>
+<li><p><strong>-----</strong></p></li>
+<li><p><strong>message</strong> (<em>dict</em>) – Envía un mensaje a todos los usuarios en la sala notificando que el usuario se ha unido.
+Sends a message to all users in the room notifying that the user has joined.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chat_socket.handle_message">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">handle_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/chat_socket.html#handle_message"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#chat_socket.handle_message" title="Link to this definition"></a></dt>
+<dd><p>Maneja el envío de mensajes dentro de una sala.
+Handles message sending inside a chat room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Contiene <code class="docutils literal notranslate"><span class="pre">username</span></code>, <code class="docutils literal notranslate"><span class="pre">msg</span></code> y <code class="docutils literal notranslate"><span class="pre">room</span></code>.
+Contains <code class="docutils literal notranslate"><span class="pre">username</span></code>, <code class="docutils literal notranslate"><span class="pre">msg</span></code>, and <code class="docutils literal notranslate"><span class="pre">room</span></code>.</p></li>
+<li><p><strong>Emits</strong></p></li>
+<li><p><strong>-----</strong></p></li>
+<li><p><strong>message</strong> (<em>dict</em>) – Envía el mensaje formateado con hora y usuario a todos los clientes en la sala.
+Sends the formatted message with time and user to all clients in the room.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chat_socket.index">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/chat_socket.html#index"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#chat_socket.index" title="Link to this definition"></a></dt>
+<dd><p>Página principal del chat.
+Main chat page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>flask.Response</em> – Renderiza la plantilla <code class="docutils literal notranslate"><span class="pre">chat.html</span></code> con el nombre de usuario y rol si la sesión está activa.
+Renders the <code class="docutils literal notranslate"><span class="pre">chat.html</span></code> template with the username and role if the session is active.</p></li>
+<li><p><em>Redirects</em></p></li>
+<li><p><em>———</em></p></li>
+<li><p>Si no hay sesión activa, redirige a la vista de <code class="docutils literal notranslate"><span class="pre">login</span></code>.</p></li>
+<li><p>If no session is active, redirects to the <code class="docutils literal notranslate"><span class="pre">login</span></code> view.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="chat_socket.rooms">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">rooms</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#chat_socket.rooms" title="Link to this definition"></a></dt>
+<dd><p>Diccionario para rastrear usuarios y las salas a las que pertenecen.
+Dictionary to track users and the rooms they belong to.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="chat_socket.socketio">
+<span class="sig-prename descclassname"><span class="pre">chat_socket.</span></span><span class="sig-name descname"><span class="pre">socketio</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;flask_socketio.SocketIO</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#chat_socket.socketio" title="Link to this definition"></a></dt>
+<dd><p>Objeto principal de SocketIO que gestiona la comunicación en tiempo real.
+Main SocketIO object that handles real-time communication.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="app.html" class="btn btn-neutral float-left" title="app module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="models module" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Miguel Angel Leon Leon, Sara Camila Guarin Guerrero, Luis Alejandro Narvaez Talavera.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

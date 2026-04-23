@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>models module &mdash; documentación de Dongo - 2.3</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=ecb1fb6c"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Dongo" href="modules.html" />
+    <link rel="prev" title="chat_socket module" href="chat_socket.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Dongo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido / Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chat_socket.html">chat_socket module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">models module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#models.Mensajes"><code class="docutils literal notranslate"><span class="pre">Mensajes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.contenido"><code class="docutils literal notranslate"><span class="pre">Mensajes.contenido</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.emisor"><code class="docutils literal notranslate"><span class="pre">Mensajes.emisor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.estado"><code class="docutils literal notranslate"><span class="pre">Mensajes.estado</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.fecha_envio"><code class="docutils literal notranslate"><span class="pre">Mensajes.fecha_envio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.id"><code class="docutils literal notranslate"><span class="pre">Mensajes.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.receiver_id"><code class="docutils literal notranslate"><span class="pre">Mensajes.receiver_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.receptor"><code class="docutils literal notranslate"><span class="pre">Mensajes.receptor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Mensajes.sender_id"><code class="docutils literal notranslate"><span class="pre">Mensajes.sender_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models.RespuestasTickets"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.fecha_respuesta"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.fecha_respuesta</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.id"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.mensaje"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.mensaje</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.ticket"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.ticket</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.ticket_id"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.ticket_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.usuario"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.usuario</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.RespuestasTickets.usuario_id"><code class="docutils literal notranslate"><span class="pre">RespuestasTickets.usuario_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models.Roles"><code class="docutils literal notranslate"><span class="pre">Roles</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.Roles.id"><code class="docutils literal notranslate"><span class="pre">Roles.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Roles.tipo_rol"><code class="docutils literal notranslate"><span class="pre">Roles.tipo_rol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Roles.usuarios"><code class="docutils literal notranslate"><span class="pre">Roles.usuarios</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models.Tickets"><code class="docutils literal notranslate"><span class="pre">Tickets</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.categoria"><code class="docutils literal notranslate"><span class="pre">Tickets.categoria</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.descripcion"><code class="docutils literal notranslate"><span class="pre">Tickets.descripcion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.estado"><code class="docutils literal notranslate"><span class="pre">Tickets.estado</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Tickets.fecha_creacion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.fecha_solucion"><code class="docutils literal notranslate"><span class="pre">Tickets.fecha_solucion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.id"><code class="docutils literal notranslate"><span class="pre">Tickets.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.prioridad"><code class="docutils literal notranslate"><span class="pre">Tickets.prioridad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.respuestas"><code class="docutils literal notranslate"><span class="pre">Tickets.respuestas</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.titulo"><code class="docutils literal notranslate"><span class="pre">Tickets.titulo</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.user"><code class="docutils literal notranslate"><span class="pre">Tickets.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Tickets.usuario_id"><code class="docutils literal notranslate"><span class="pre">Tickets.usuario_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models.Usuarios"><code class="docutils literal notranslate"><span class="pre">Usuarios</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.contrasena"><code class="docutils literal notranslate"><span class="pre">Usuarios.contrasena</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.correo"><code class="docutils literal notranslate"><span class="pre">Usuarios.correo</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.creado_el"><code class="docutils literal notranslate"><span class="pre">Usuarios.creado_el</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.id"><code class="docutils literal notranslate"><span class="pre">Usuarios.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.numero_documento"><code class="docutils literal notranslate"><span class="pre">Usuarios.numero_documento</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.primer_apellido"><code class="docutils literal notranslate"><span class="pre">Usuarios.primer_apellido</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.primer_nombre"><code class="docutils literal notranslate"><span class="pre">Usuarios.primer_nombre</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.rol"><code class="docutils literal notranslate"><span class="pre">Usuarios.rol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.rol_id"><code class="docutils literal notranslate"><span class="pre">Usuarios.rol_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.segundo_apellido"><code class="docutils literal notranslate"><span class="pre">Usuarios.segundo_apellido</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.segundo_nombre"><code class="docutils literal notranslate"><span class="pre">Usuarios.segundo_nombre</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.tickets"><code class="docutils literal notranslate"><span class="pre">Usuarios.tickets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.tipo_documento"><code class="docutils literal notranslate"><span class="pre">Usuarios.tipo_documento</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.Usuarios.username"><code class="docutils literal notranslate"><span class="pre">Usuarios.username</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Dongo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Dongo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">models module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/models.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-models">
+<span id="models-module"></span><h1>models module<a class="headerlink" href="#module-models" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.Mensajes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">Mensajes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#Mensajes"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#models.Mensajes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.contenido">
+<span class="sig-name descname"><span class="pre">contenido</span></span><a class="headerlink" href="#models.Mensajes.contenido" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.emisor">
+<span class="sig-name descname"><span class="pre">emisor</span></span><a class="headerlink" href="#models.Mensajes.emisor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.estado">
+<span class="sig-name descname"><span class="pre">estado</span></span><a class="headerlink" href="#models.Mensajes.estado" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.fecha_envio">
+<span class="sig-name descname"><span class="pre">fecha_envio</span></span><a class="headerlink" href="#models.Mensajes.fecha_envio" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#models.Mensajes.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.receiver_id">
+<span class="sig-name descname"><span class="pre">receiver_id</span></span><a class="headerlink" href="#models.Mensajes.receiver_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.receptor">
+<span class="sig-name descname"><span class="pre">receptor</span></span><a class="headerlink" href="#models.Mensajes.receptor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Mensajes.sender_id">
+<span class="sig-name descname"><span class="pre">sender_id</span></span><a class="headerlink" href="#models.Mensajes.sender_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.RespuestasTickets">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">RespuestasTickets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#RespuestasTickets"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#models.RespuestasTickets" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.fecha_respuesta">
+<span class="sig-name descname"><span class="pre">fecha_respuesta</span></span><a class="headerlink" href="#models.RespuestasTickets.fecha_respuesta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#models.RespuestasTickets.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.mensaje">
+<span class="sig-name descname"><span class="pre">mensaje</span></span><a class="headerlink" href="#models.RespuestasTickets.mensaje" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.ticket">
+<span class="sig-name descname"><span class="pre">ticket</span></span><a class="headerlink" href="#models.RespuestasTickets.ticket" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.ticket_id">
+<span class="sig-name descname"><span class="pre">ticket_id</span></span><a class="headerlink" href="#models.RespuestasTickets.ticket_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.usuario">
+<span class="sig-name descname"><span class="pre">usuario</span></span><a class="headerlink" href="#models.RespuestasTickets.usuario" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.RespuestasTickets.usuario_id">
+<span class="sig-name descname"><span class="pre">usuario_id</span></span><a class="headerlink" href="#models.RespuestasTickets.usuario_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.Roles">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">Roles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#Roles"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#models.Roles" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Roles.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#models.Roles.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Roles.tipo_rol">
+<span class="sig-name descname"><span class="pre">tipo_rol</span></span><a class="headerlink" href="#models.Roles.tipo_rol" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Roles.usuarios">
+<span class="sig-name descname"><span class="pre">usuarios</span></span><a class="headerlink" href="#models.Roles.usuarios" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.Tickets">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">Tickets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#Tickets"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#models.Tickets" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.categoria">
+<span class="sig-name descname"><span class="pre">categoria</span></span><a class="headerlink" href="#models.Tickets.categoria" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.descripcion">
+<span class="sig-name descname"><span class="pre">descripcion</span></span><a class="headerlink" href="#models.Tickets.descripcion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.estado">
+<span class="sig-name descname"><span class="pre">estado</span></span><a class="headerlink" href="#models.Tickets.estado" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.fecha_creacion">
+<span class="sig-name descname"><span class="pre">fecha_creacion</span></span><a class="headerlink" href="#models.Tickets.fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.fecha_solucion">
+<span class="sig-name descname"><span class="pre">fecha_solucion</span></span><a class="headerlink" href="#models.Tickets.fecha_solucion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#models.Tickets.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.prioridad">
+<span class="sig-name descname"><span class="pre">prioridad</span></span><a class="headerlink" href="#models.Tickets.prioridad" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.respuestas">
+<span class="sig-name descname"><span class="pre">respuestas</span></span><a class="headerlink" href="#models.Tickets.respuestas" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.titulo">
+<span class="sig-name descname"><span class="pre">titulo</span></span><a class="headerlink" href="#models.Tickets.titulo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.user">
+<span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#models.Tickets.user" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Tickets.usuario_id">
+<span class="sig-name descname"><span class="pre">usuario_id</span></span><a class="headerlink" href="#models.Tickets.usuario_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.Usuarios">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">Usuarios</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#Usuarios"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#models.Usuarios" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.contrasena">
+<span class="sig-name descname"><span class="pre">contrasena</span></span><a class="headerlink" href="#models.Usuarios.contrasena" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.correo">
+<span class="sig-name descname"><span class="pre">correo</span></span><a class="headerlink" href="#models.Usuarios.correo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.creado_el">
+<span class="sig-name descname"><span class="pre">creado_el</span></span><a class="headerlink" href="#models.Usuarios.creado_el" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#models.Usuarios.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.numero_documento">
+<span class="sig-name descname"><span class="pre">numero_documento</span></span><a class="headerlink" href="#models.Usuarios.numero_documento" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.primer_apellido">
+<span class="sig-name descname"><span class="pre">primer_apellido</span></span><a class="headerlink" href="#models.Usuarios.primer_apellido" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.primer_nombre">
+<span class="sig-name descname"><span class="pre">primer_nombre</span></span><a class="headerlink" href="#models.Usuarios.primer_nombre" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.rol">
+<span class="sig-name descname"><span class="pre">rol</span></span><a class="headerlink" href="#models.Usuarios.rol" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.rol_id">
+<span class="sig-name descname"><span class="pre">rol_id</span></span><a class="headerlink" href="#models.Usuarios.rol_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.segundo_apellido">
+<span class="sig-name descname"><span class="pre">segundo_apellido</span></span><a class="headerlink" href="#models.Usuarios.segundo_apellido" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.segundo_nombre">
+<span class="sig-name descname"><span class="pre">segundo_nombre</span></span><a class="headerlink" href="#models.Usuarios.segundo_nombre" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.tickets">
+<span class="sig-name descname"><span class="pre">tickets</span></span><a class="headerlink" href="#models.Usuarios.tickets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.tipo_documento">
+<span class="sig-name descname"><span class="pre">tipo_documento</span></span><a class="headerlink" href="#models.Usuarios.tipo_documento" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.Usuarios.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#models.Usuarios.username" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="chat_socket.html" class="btn btn-neutral float-left" title="chat_socket module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Dongo" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Miguel Angel Leon Leon, Sara Camila Guarin Guerrero, Luis Alejandro Narvaez Talavera.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

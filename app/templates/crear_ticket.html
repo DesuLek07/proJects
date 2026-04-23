@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="../static/dashboard.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Ticket - Mesa de Ayuda</title>
+</head>
+<body>
+  {% include 'components/sidebar.html' %}
+
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <h1>Crear nuevo Ticket 🎫</h1>
+    </header>
+
+    <!-- Formulario de creación -->
+    <section class="tickets">
+      <form method="POST" action="{{ url_for('crear_ticket') }}" class="ticket-form">
+        <div class="form-group">
+          <label for="titulo">Asunto</label>
+          <input type="text" id="titulo" name="titulo" required placeholder="Escribe el asunto de tu ticket">
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="5" required placeholder="Describe tu problema o solicitud"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="prioridad">Prioridad</label>
+          <select name="prioridad" id="prioridad" required>
+            <option value="" disabled selected>Selecciona la prioridad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" name="categoria" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            <option value="Soporte Técnico">Soporte Técnico</option>
+            <option value="Indemnizacion">Indemnizacion</option>
+            <option value="Consultas">Consultas</option>
+            <option value="Incidente">Incidente</option>
+            <option value="Solicitud">Solicitud</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn-submit">Crear Ticket</button>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="alerts">
+              {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %} 
+
+      </form>
+    </section>
+  </main>
+</body>
+</html>

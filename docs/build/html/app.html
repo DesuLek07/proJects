@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app module &mdash; documentación de Dongo - 2.3</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=ecb1fb6c"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="chat_socket module" href="chat_socket.html" />
+    <link rel="prev" title="Dongo HelpDesk - Documentación / Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Dongo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido / Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">app module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dongo-helpdesk-aplicacion-principal-main-application-module">Dongo HelpDesk - Aplicación principal / Main application module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.DOC_REGEX"><code class="docutils literal notranslate"><span class="pre">DOC_REGEX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.EMAIL_REGEX"><code class="docutils literal notranslate"><span class="pre">EMAIL_REGEX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.NAME_REGEX"><code class="docutils literal notranslate"><span class="pre">NAME_REGEX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.PASSWORD_REGEX"><code class="docutils literal notranslate"><span class="pre">PASSWORD_REGEX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.USERNAME_REGEX"><code class="docutils literal notranslate"><span class="pre">USERNAME_REGEX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.cerrar_ticket"><code class="docutils literal notranslate"><span class="pre">cerrar_ticket()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.chat_admin"><code class="docutils literal notranslate"><span class="pre">chat_admin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.chat_privado"><code class="docutils literal notranslate"><span class="pre">chat_privado()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.crear_ticket"><code class="docutils literal notranslate"><span class="pre">crear_ticket()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.dashboard_admin"><code class="docutils literal notranslate"><span class="pre">dashboard_admin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.dashboard_soporte"><code class="docutils literal notranslate"><span class="pre">dashboard_soporte()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.gestion_tickets"><code class="docutils literal notranslate"><span class="pre">gestion_tickets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.handle_disconnect"><code class="docutils literal notranslate"><span class="pre">handle_disconnect()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.handle_join"><code class="docutils literal notranslate"><span class="pre">handle_join()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.handle_join_private"><code class="docutils literal notranslate"><span class="pre">handle_join_private()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.handle_message"><code class="docutils literal notranslate"><span class="pre">handle_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.handle_private_message"><code class="docutils literal notranslate"><span class="pre">handle_private_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.lista_chats"><code class="docutils literal notranslate"><span class="pre">lista_chats()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.login"><code class="docutils literal notranslate"><span class="pre">login()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.logout"><code class="docutils literal notranslate"><span class="pre">logout()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.perfil"><code class="docutils literal notranslate"><span class="pre">perfil()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.perfil_admin"><code class="docutils literal notranslate"><span class="pre">perfil_admin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.raiz"><code class="docutils literal notranslate"><span class="pre">raiz()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.rooms"><code class="docutils literal notranslate"><span class="pre">rooms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.ver_ticket"><code class="docutils literal notranslate"><span class="pre">ver_ticket()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.ver_ticket_usuario"><code class="docutils literal notranslate"><span class="pre">ver_ticket_usuario()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chat_socket.html">chat_socket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Dongo</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Dongo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">app module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/app.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-app">
+<span id="app-module"></span><h1>app module<a class="headerlink" href="#module-app" title="Link to this heading"></a></h1>
+<section id="dongo-helpdesk-aplicacion-principal-main-application-module">
+<h2>Dongo HelpDesk - Aplicación principal / Main application module<a class="headerlink" href="#dongo-helpdesk-aplicacion-principal-main-application-module" title="Link to this heading"></a></h2>
+<dl>
+<dt>Proyecto:</dt><dd><p>Dongo HelpDesk</p>
+</dd>
+<dt>Descripción:</dt><dd><p>Módulo principal que define las rutas HTTP, validaciones, y eventos en tiempo real
+(Socket.IO) para el sistema de mesa de ayuda. Contiene autenticación básica,
+CRUD de tickets, vistas de dashboard y chat (público y privado).</p>
+<p>Main module that defines HTTP routes, validations, and real-time events
+(Socket.IO) for the help desk system. Contains basic authentication,
+ticket CRUD, dashboard views and chat (public and private).</p>
+</dd>
+<dt>Autores:</dt><dd><p>Miguel Angel Leon Leon
+Sara Camila Guarin Guerrero
+Luis Alejandro Narvaez Talavera</p>
+</dd>
+<dt>Tecnologías:</dt><dd><ul class="simple">
+<li><p>Flask</p></li>
+<li><p>Flask-SocketIO</p></li>
+<li><p>SQLAlchemy (ORM)</p></li>
+<li><p>Python 3.x</p></li>
+</ul>
+</dd>
+<dt>Notas:</dt><dd><ul class="simple">
+<li><p>Este archivo asume que el módulo <cite>models</cite> provee: sesion, Usuarios, Tickets,
+RespuestasTickets, Mensajes (modelos SQLAlchemy).</p></li>
+<li><p>Las docstrings están en estilo Google para compatibilidad con Sphinx + napoleon.</p></li>
+</ul>
+<p>This file assumes that the <cite>models</cite> module provides: sesion, Usuarios, Tickets,
+RespuestasTickets, Mensajes (SQLAlchemy models).
+Docstrings use Google style for compatibility with Sphinx + napoleon.</p>
+</dd>
+</dl>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="app.DOC_REGEX">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">DOC_REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^\\d{6,12}$')</span></em><a class="headerlink" href="#app.DOC_REGEX" title="Link to this definition"></a></dt>
+<dd><p>Expresión regular para números de documento (6 a 12 dígitos).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="app.EMAIL_REGEX">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">EMAIL_REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^[\\w\\.-]+&#64;[\\w\\.-]+\\.\\w{2,4}$')</span></em><a class="headerlink" href="#app.EMAIL_REGEX" title="Link to this definition"></a></dt>
+<dd><p>Expresión regular para correos electrónicos.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="app.NAME_REGEX">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">NAME_REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^[A-Za-zÁÉÍÓÚáéíóúñÑ</span> <span class="pre">]{2,30}$')</span></em><a class="headerlink" href="#app.NAME_REGEX" title="Link to this definition"></a></dt>
+<dd><p>Expresión regular para nombres (incluye acentos y ñ).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="app.PASSWORD_REGEX">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">PASSWORD_REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d&#64;#$*%^&amp;+=!]{6,20}$')</span></em><a class="headerlink" href="#app.PASSWORD_REGEX" title="Link to this definition"></a></dt>
+<dd><p>Expresión regular para validar contraseñas (mínimo 6 caracteres, con letras y números).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="app.USERNAME_REGEX">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">USERNAME_REGEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^[a-zA-Z0-9_]{4,20}$')</span></em><a class="headerlink" href="#app.USERNAME_REGEX" title="Link to this definition"></a></dt>
+<dd><p>Expresión regular para validar nombres de usuario (4–20 caracteres alfanuméricos o guión bajo).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.cerrar_ticket">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">cerrar_ticket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticket_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#cerrar_ticket"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.cerrar_ticket" title="Link to this definition"></a></dt>
+<dd><p>Cambia el estado del ticket a “Cerrado” y registra la fecha de solución.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ticket_id</strong> (<em>int</em>) – ID del ticket a cerrar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>redirect a “gestion_tickets” con mensaje flash.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.chat_admin">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">chat_admin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#chat_admin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.chat_admin" title="Link to this definition"></a></dt>
+<dd><p>Vista para el chat general o sala de admin según rol.</p>
+<dl class="simple">
+<dt>English:</dt><dd><p>Renders a chat template and define which room usar (sala_general o sala_admin).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“chat_admin.html”, username=username, room=room, rol=rol)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.chat_privado">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">chat_privado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receiver_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#chat_privado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.chat_privado" title="Link to this definition"></a></dt>
+<dd><p>Muestra la conversación privada entre el usuario en sesión y otro usuario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>receiver_id</strong> (<em>int</em>) – ID del usuario receptor.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>render_template(“chat_privado.html”, mensajes=mensajes, receiver=receiver)</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.crear_ticket">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">crear_ticket</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#crear_ticket"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.crear_ticket" title="Link to this definition"></a></dt>
+<dd><p>Crea un nuevo ticket para el usuario autenticado.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Si POST: valida título y descripción y guarda el ticket.</p></li>
+<li><p>Si GET: renderiza el formulario de creación.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>POST: validates title and description and saves ticket.</p></li>
+<li><p>GET: renders the creation form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“crear_ticket.html”) o redirect al dashboard.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.dashboard">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">dashboard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#dashboard"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.dashboard" title="Link to this definition"></a></dt>
+<dd><p>Dashboard principal para usuarios regulares.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Requiere que exista “user_id” en sesión.</p></li>
+<li><p>Obtiene estadísticas de tickets del usuario y la lista de sus tickets.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>Requires “user_id” in session.</p></li>
+<li><p>Retrieves ticket stats and list for the user.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“dashboard.html”, …)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.dashboard_admin">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">dashboard_admin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#dashboard_admin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.dashboard_admin" title="Link to this definition"></a></dt>
+<dd><p>Dashboard para administradores.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Muestra usuarios, tickets y estadísticas globales.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>Shows users, tickets and overall statistics.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“dashboard_admin.html”, …)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.dashboard_soporte">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">dashboard_soporte</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#dashboard_soporte"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.dashboard_soporte" title="Link to this definition"></a></dt>
+<dd><p>Dashboard para el personal de soporte.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Muestra tickets que no estén cerrados.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>Shows tickets that are not closed.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“dashboard_soporte.html”, tickets=tickets)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.gestion_tickets">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">gestion_tickets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#gestion_tickets"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.gestion_tickets" title="Link to this definition"></a></dt>
+<dd><p>Listado y gestión de tickets con filtros opcionales.</p>
+<dl class="simple">
+<dt>Query params:</dt><dd><ul class="simple">
+<li><p>estado: filtra por estado del ticket (e.g., “Abierto”)</p></li>
+<li><p>categoria: filtra por categoría</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“gestion_tickets.html”, …) con listas y estadísticas.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.handle_disconnect">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">handle_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#handle_disconnect"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.handle_disconnect" title="Link to this definition"></a></dt>
+<dd><p>Evento Socket.IO: “disconnect”
+- Notifica que un usuario salió del chat y elimina su mapeo en memoria.</p>
+<dl class="simple">
+<dt>English:</dt><dd><p>Notifies rooms that a user disconnected and removes them from the in-memory map.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.handle_join">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">handle_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#handle_join"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.handle_join" title="Link to this definition"></a></dt>
+<dd><p>Evento Socket.IO: “join”
+- El usuario se une a una sala pública o de admin.
+- Mapea username -&gt; room en memoria y emite un mensaje de notificación.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – { “username”: str, “room”: str }</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>English:</dt><dd><p>Socket.IO “join” event for joining public/admin room.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Emite un evento “message” al room.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.handle_join_private">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">handle_join_private</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#handle_join_private"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.handle_join_private" title="Link to this definition"></a></dt>
+<dd><p>Evento Socket.IO: “join_private”
+- Permite a dos usuarios unirse a una sala privada calculada por sus IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – { “user_id”: int, “target_id”: int }</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>realiza join_room a la sala privada y emite un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.handle_message">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">handle_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#handle_message"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.handle_message" title="Link to this definition"></a></dt>
+<dd><p>Evento Socket.IO: “message”
+- Envía mensajes a la sala indicada (no persiste en BD).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – { “username”: str, “msg”: str, “room”: str }</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>English:</dt><dd><p>Sends a chat message to the specified room. Timestamped on server.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Usa send(…) para enviar a la sala.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.handle_private_message">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">handle_private_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#handle_private_message"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.handle_private_message" title="Link to this definition"></a></dt>
+<dd><p>Evento Socket.IO: “private_message”
+- Guarda el mensaje privado en la base de datos y lo envía a la sala privada.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – { “sender_id”: int, “receiver_id”: int, “msg”: str }</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>English:</dt><dd><p>Persists the private message and broadcasts it to the private chat room.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.lista_chats">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">lista_chats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#lista_chats"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.lista_chats" title="Link to this definition"></a></dt>
+<dd><p>Lista de usuarios para iniciar un chat privado.</p>
+<dl class="simple">
+<dt>English:</dt><dd><p>Returns a list of other users (excludes current user) to start private chats.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“lista_chats.html”, usuarios=usuarios)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.login">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#login"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.login" title="Link to this definition"></a></dt>
+<dd><p>Maneja la pantalla de inicio de sesión y la autenticación de usuarios.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Si el método es GET, renderiza el template “login.html”.</p></li>
+<li><p>Si el método es POST, valida username/password con regex y consulta la BD.</p></li>
+<li><p>Si es válido, guarda información en la sesión y redirige según el rol.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>GET renders “login.html”.</p></li>
+<li><p>POST validates username/password via regex and queries DB.</p></li>
+<li><p>On success, stores session info and redirects according to user role.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“login.html”) o redirect a dashboard según rol.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.logout">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#logout"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.logout" title="Link to this definition"></a></dt>
+<dd><p>Limpia la sesión del usuario y redirige a la página de login.</p>
+<dl class="simple">
+<dt>English:</dt><dd><p>Clears the user’s session and redirects to the login page.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>redirect a “login”</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.perfil">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">perfil</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#perfil"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.perfil" title="Link to this definition"></a></dt>
+<dd><p>Muestra el perfil del usuario actual.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Construye nombre completo, correo, documento y rol para mostrar.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>Builds full name, email, document and role to display.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“perfil.html”, …)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.perfil_admin">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">perfil_admin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#perfil_admin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.perfil_admin" title="Link to this definition"></a></dt>
+<dd><p>Muestra perfil del administrador actualmente autenticado.</p>
+<dl class="simple">
+<dt>English:</dt><dd><p>Shows the current authenticated administrator profile.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“perfil_admin.html”, …)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.raiz">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">raiz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#raiz"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.raiz" title="Link to this definition"></a></dt>
+<dd><p>Redirige a la página de login.
+Redirects to the login page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Redirección a la ruta “login”.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>werkzeug Response</p>
+</dd>
+</dl>
+<p class="rubric">Notas</p>
+<p>Ruta raíz que simplemente envía a /login.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.register">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#register"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.register" title="Link to this definition"></a></dt>
+<dd><p>Registra un nuevo usuario en la base de datos.</p>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Valida entradas (documento, nombres, username, correo, password) con regex.</p></li>
+<li><p>Crea instancia de Usuarios y la persiste.</p></li>
+<li><p>Maneja errores de integridad (duplicados) y muestra mensajes pertinentes.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>Validates inputs (document, names, username, email, password) with regex.</p></li>
+<li><p>Creates a Usuarios instance and persists it.</p></li>
+<li><p>Handles IntegrityError (duplicates) presenting appropriate messages.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“register.html”) o redirect a “login” al registrarse.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="app.rooms">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">rooms</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#app.rooms" title="Link to this definition"></a></dt>
+<dd><p>Diccionario temporal para mapear username -&gt; room en memoria (no persistente).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.ver_ticket">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">ver_ticket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticket_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#ver_ticket"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.ver_ticket" title="Link to this definition"></a></dt>
+<dd><p>Vista detallada de un ticket. Permite cambiar estado/prioridad y agregar respuestas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ticket_id</strong> (<em>int</em>) – ID del ticket a visualizar.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Spanish:</dt><dd><ul class="simple">
+<li><p>Si POST: procesa cambios de estado/prioridad y agrega respuesta si existe.</p></li>
+</ul>
+</dd>
+<dt>English:</dt><dd><ul class="simple">
+<li><p>POST: processes state/priority changes and adds a response if provided.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>render_template(“ver_ticket.html”, ticket=ticket, respuestas=respuestas)</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.ver_ticket_usuario">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">ver_ticket_usuario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticket_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#ver_ticket_usuario"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#app.ver_ticket_usuario" title="Link to this definition"></a></dt>
+<dd><p>Vista pública/usuario que muestra un ticket y sus respuestas ordenadas cronológicamente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ticket_id</strong> (<em>int</em>) – ID del ticket.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>render_template(“ver_ticket_usuario.html”, ticket=ticket, respuestas=respuestas)</dt><dd><p>o (str, int) si no se encuentra.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="index.html" class="btn btn-neutral float-left" title="Dongo HelpDesk - Documentación / Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="chat_socket.html" class="btn btn-neutral float-right" title="chat_socket module" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Miguel Angel Leon Leon, Sara Camila Guarin Guerrero, Luis Alejandro Narvaez Talavera.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

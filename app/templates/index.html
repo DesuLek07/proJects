@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DONGO - Inicio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body class="home-body">
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="static/img/complemento.jpg" alt="Logo DONGO" />
+    </div>
+
+    <nav class="menu">
+      <span class="menu-toggle" onclick="toggleSidebar()">☰ Menu</span>
+      <a href="#" id="inicio-link" class="active">INICIO</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-left">
+      <img src="static/img/logo.jpg" alt="Complemento" />
+      <p class="slogan">“Tu ayuda, más cerca que nunca”</p>
+    </div>
+
+    <div class="hero-right">
+      <div class="divider"></div>
+
+      <p class="descripcion">
+        El sistema <b>DONGO</b>, un software de mesa de ayudaque busca centralizar
+         y digitalizar la atención de solicitudes, permitiendo que los usuarios
+        registren sus casos, los administradores gestionen la información y 
+        el personal de soporte brinde
+        acompañamiento oportuno.
+
+      </p>
+
+      <div class="buttons">
+        <a href="/login" class="btn-primary">INICIAR SESIÓN</a>
+        <a href="/register" class="btn-secondary">REGISTRARSE</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left">
+      <p>Tel: +57 321 387 4799</p>
+      <p>Email: soporte@dongo.com</p>
+    </div>
+
+    <div class="footer-center">
+      <div class="language-switch">
+      🌎 {{ _('Idioma') }}:
+      <a href="{{ url_for('set_language', lang_code='es') }}">Español</a> |
+      <a href="{{ url_for('set_language', lang_code='en') }}">English</a>
+    </div>
+    </div>
+
+    <div class="footer-right">
+      <p>© 2025 <b>DONGO</b> | Todos los derechos reservados</p>
+    </div>
+  </footer>
+  <script>
+  const toggleSidebar = () => {
+    document.querySelector(".sidebar").classList.toggle("active");
+  };
+</script>
+
+</body>
+</html>

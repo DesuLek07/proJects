@@ -1,0 +1,257 @@
+/* ================================
+      ANIMACIONES SIMPLES
+================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(25px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ================================
+      LAYOUT PRINCIPAL
+================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  background: #e1e6ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Wrapper general */
+.auth-wrapper {
+  display: flex;
+  width: 90%;
+  max-width: 720px;    /* 🔥 antes era 900px */
+  background: white;
+  border-radius: 16px;
+  padding: 20px 25px;  /* 🔥 menos padding */
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+  animation: fadeIn .6s ease-in-out;
+}
+
+/* ================================
+      COLUMNA DEL LOGO
+================================ */
+.brand-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-side img {
+  width: 220px;
+  height: auto;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+/* ================================
+      FORMULARIO
+================================ */
+.form-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-form {
+  width: 90%;
+  animation: slideUp .6s ease-out;
+}
+
+.auth-form h1 {
+  text-align: center;
+  margin-bottom: 18px;
+  color: #2c3e50;
+}
+
+/* Inputs y selects */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Inputs y selects */
+input, select {
+  width: calc(100% + 14px); /* ✅ +2px de ancho */
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  transition: border-color .25s ease, transform .2s ease;
+}
+
+input:focus, select:focus {
+  border-color: #2c3e50;
+  transform: scale(1.02);
+}
+
+
+/* Botón */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.btn-submit:hover {
+  transform: scale(1.03);
+  background: #34495e;
+}
+
+/* Texto inferior */
+.redirect-text {
+  text-align: center;
+  margin-top: 18px;
+}
+
+/* ================================
+      RESPONSIVE (MÓVIL)
+================================ */
+@media (max-width: 820px) {
+  .auth-wrapper {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .brand-side {
+    margin-bottom: 20px;
+  }
+
+  .brand-side img {
+    width: 160px;
+  }
+}
+
+/* GRID PARA REGISTER — 🔥 RECOMPACTA LA ALTURA */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+}
+
+/* password ocupa todo el ancho abajo */
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+/* contenedor register MÁS COMPACTO */
+.auth-wrapper {
+  max-width: 760px;    /* antes era 900px */
+  padding: 15px 25px;  /* reduce altura */
+}
+
+/* menos espacio entre elementos del form */
+.form-group input,
+.form-group select {
+  padding: 8px;
+}
+
+/* reduce espacio del título */
+.auth-form h1 {
+  margin-bottom: 10px;
+}
+
+/* LOGO más compacto */
+.brand-side img {
+  width: 180px;
+}
+
+/* RESPONSIVE — en móvil una sola columna */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+}
+
+/* Estilo para los textos <p> dentro del form */
+.form-side p {
+  text-align: center;
+  font-size: 14px;
+  color: #2c3e50;
+  margin-top: 12px;
+  animation: fadeIn .6s ease-in-out;
+}
+
+/* Si tienen enlaces dentro */
+.form-side p a {
+  color: #34495e;
+  font-weight: bold;
+  text-decoration: none;
+  transition: .3s ease;
+}
+
+.form-side p a:hover {
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+/* ================================
+      FLASH MESSAGES
+================================ */
+.flash-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.flash-message {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: white;
+  animation: fadeIn .4s ease, slideUp .4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 260px;
+  max-width: 360px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Colores por categoría */
+.flash-success { background: #2ecc71; }   /* Verde */
+.flash-error   { background: #e74c3c; }   /* Rojo */
+.flash-warning { background: #f1c40f; color: #333; } /* Amarillo */
+.flash-info    { background: #3498db; }   /* Azul */
+
+/* Botón de cerrar */
+.flash-close {
+  margin-left: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  background: rgba(255,255,255,0.25);
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: .25s ease;
+}
+
+.flash-close:hover {
+  background: rgba(255,255,255,0.45);
+}

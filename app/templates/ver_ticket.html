@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Ticket</title>
+    <link rel="stylesheet" href="../static/ver_ticket.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Gestión de Tickets</h1>
+        <a href="{{ url_for('gestion_tickets') }}" class="btn volver">⬅ Volver</a>
+    </header>
+
+    <main class="container">
+        <section class="ticket-card">
+            <h2>🎫 Ticket #{{ ticket.id }}</h2>
+
+            <form method="POST" class="form-editar">
+                <div class="info">
+                    <p><strong>Título:</strong> {{ ticket.titulo }}</p>
+                    <p><strong>Descripción:</strong> {{ ticket.descripcion }}</p>
+                    <p><strong>Categoría:</strong> {{ ticket.categoria }}</p>
+
+                    <label><strong>Estado:</strong></label>
+                    <select name="estado" required>
+                        <option value="Abierto" {% if ticket.estado == 'Abierto' %}selected{% endif %}>Abierto</option>
+                        <option value="En progreso" {% if ticket.estado == 'En progreso' %}selected{% endif %}>En progreso</option>
+                        <option value="Cerrado" {% if ticket.estado == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+                    </select>
+
+                    <label><strong>Prioridad:</strong></label>
+                    <select name="prioridad" required>
+                        <option value="Alta" {% if ticket.prioridad == 'Alta' %}selected{% endif %}>Alta</option>
+                        <option value="Media" {% if ticket.prioridad == 'Media' %}selected{% endif %}>Media</option>
+                        <option value="Baja" {% if ticket.prioridad == 'Baja' %}selected{% endif %}>Baja</option>
+                    </select>
+                </div>
+                
+                <br>
+                <label for="respuesta"><strong>Agregar respuesta:</strong></label>
+                <textarea name="respuesta" id="respuesta" rows="4" placeholder="Escribe tu respuesta..."></textarea>
+
+                <button type="submit" class="btn guardar">💾 Guardar Cambios</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
